@@ -1,7 +1,13 @@
 import express, { Request, Response } from 'express';
+import dotenv from 'dotenv';
+import routes from './routes/index';
 
+dotenv.config();
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use('/api', routes);
 
 // Rota de exemplo
 app.get('/', (req: Request, res: Response) => {
