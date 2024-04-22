@@ -4,13 +4,13 @@ import { User } from '../models/User';
 export class UserController {
     // GET /api/users
     public async getAll(req: Request, res: Response): Promise<void> {
-        /*try {
+        try {
             // Chamando o método estático do modelo para buscar todos os usuários
             const users = await User.findAll();
             res.json(users);
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });
-        }*/
+        }
     }
 
     // GET /api/users/:id

@@ -3,6 +3,13 @@ import { prisma } from "../lib/prisma"
 
 export class User {
     // Métodos para manipular usuários
+
+    public static async findAll(): Promise<User[] | []> {
+        const users = await prisma.user.findMany();
+        if (!users) return [];
+        return users;
+    }
+
     public static async findById(id: string): Promise<User | null> {
         const user = await prisma.user.findUnique({ where: { id } });
         if (!user) return null;
