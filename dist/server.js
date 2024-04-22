@@ -4,8 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const index_1 = __importDefault(require("./routes/index"));
+dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+app.use(express_1.default.json());
+app.use('/api', index_1.default);
 // Rota de exemplo
 app.get('/', (req, res) => {
     res.send('Olá, mundo!');

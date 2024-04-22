@@ -1,0 +1,67 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Transaction = void 0;
+const prisma_1 = require("../lib/prisma");
+class Transaction {
+    // Métodos para manipular transações3
+    static async findAll() {
+        const transactions = await prisma_1.prisma.transaction.findMany();
+        if (!transactions)
+            return [];
+        return transactions;
+    }
+    static async findById(id) {
+        const transaction = await prisma_1.prisma.transaction.findUnique({ where: { id } });
+        if (!transaction)
+            return null;
+        return new Transaction(transaction);
+    }
+    static async create(data) {
+        try {
+            const newTransaction = await prisma_1.prisma.transaction.create({
+                data: {
+                    value: data.value,
+                    type: data.type,
+                    recurrence: data.recurrence,
+                    number_recurrence: data.number_recurrence,
+                    date_transacation: data.date_transacation,
+                    description: data.description,
+                    tags: { set: data.tags }, // Assuming tags is an array of strings
+                    user_id: data.user_id,
+                },
+            });
+            return new Transaction(newTransaction);
+        }
+        catch (error) {
+            // Handle error appropriately
+            throw new Error('Failed to create transaction');
+        }
+    }
+    // Outros métodos de manipulação de usuários...
+    // Atributos do modelo
+    id;
+    createdAt;
+    updatedAt;
+    value;
+    type;
+    recurrence;
+    number_recurrence;
+    date_transacation;
+    description;
+    tags;
+    user_id;
+    constructor(prismaTransaction) {
+        this.id = prismaTransaction.id;
+        this.createdAt = prismaTransaction.createdAt;
+        this.updatedAt = prismaTransaction.updatedAt;
+        this.value = prismaTransaction.value;
+        this.type = prismaTransaction.type;
+        this.recurrence = prismaTransaction.recurrence;
+        this.number_recurrence = prismaTransaction.number_recurrence;
+        this.date_transacation = prismaTransaction.date_transacation;
+        this.description = prismaTransaction.description;
+        this.tags = prismaTransaction.tags;
+        this.user_id = prismaTransaction.user_id;
+    }
+}
+exports.Transaction = Transaction;
