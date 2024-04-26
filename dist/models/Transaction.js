@@ -18,7 +18,8 @@ class Transaction {
     static async create(data) {
         try {
             console.log('create ', data);
-            const newTransaction = await prisma_1.prisma.transaction.create({
+            let newTransaction = {};
+            await prisma_1.prisma.transaction.create({
                 data: {
                     value: data.value,
                     type: data.type,
@@ -29,8 +30,13 @@ class Transaction {
                     tags: { set: data.tags }, // Assuming tags is an array of strings
                     user_id: data.user_id,
                 },
+            }).then((resp) => {
+                newTransaction = resp;
+            })
+                .catch(err => {
+                throw new Error(err);
             });
-            return new Transaction(newTransaction);
+            return newTransaction;
         }
         catch (error) {
             // Handle error appropriately
@@ -40,7 +46,8 @@ class Transaction {
     static async update(data) {
         try {
             console.log('update ', data);
-            const updatedTransaction = await prisma_1.prisma.transaction.update({
+            let updatedTransaction = {};
+            await prisma_1.prisma.transaction.update({
                 where: {
                     id: data.id,
                 },
@@ -55,13 +62,17 @@ class Transaction {
                     user_id: data.user_id,
                     updatedAt: new Date()
                 },
-            }).catch(err => { console.log('error', err); });
-            //console.log('updatedTransaction: ', updatedTransaction);
-            return {}; //(updatedTransaction);
+            }).then((resp) => {
+                updatedTransaction = resp;
+            })
+                .catch(err => {
+                throw new Error(err);
+            });
+            return updatedTransaction;
         }
         catch (error) {
             // Handle error appropriately
-            throw new Error('Failed to update transaction');
+            throw new Error(`Failed to update transaction: ${error}`);
         }
     }
     static async delete(data) {
@@ -70,13 +81,15 @@ class Transaction {
                 where: {
                     id: data.id
                 },
-            }).catch(error => console.log('aaaaaaaa', error));
+            }).catch(err => {
+                throw new Error(err);
+            });
             //console.log('delete: ', deletedTransaction);
             return true;
         }
         catch (error) {
             // Handle error appropriately
-            throw new Error('Failed to create transaction');
+            throw new Error(`Failed to delete transaction: ${error}`);
         }
     }
     // Atributos do modelo
