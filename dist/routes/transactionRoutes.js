@@ -10,5 +10,5 @@ const router = express_1.default.Router();
 router.get('/', TransactionController_1.default.getAll);
 router.post('/', TransactionController_1.default.create);
 router.put('/', TransactionController_1.default.update);
-router.delete('/', TransactionController_1.default.delete);
+router.delete('/:id', TransactionController_1.default.delete);
 exports.default = router;

@@ -3,10 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionController = void 0;
 const Transaction_1 = require("../models/Transaction");
 class TransactionController {
-    // GET /api/users
     async getAll(req, res) {
         try {
-            // Chamando o método estático do modelo para buscar todos os usuários
             const transactions = await Transaction_1.Transaction.findAll();
             res.json(transactions);
         }
@@ -14,12 +12,9 @@ class TransactionController {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
-    // GET /api/users/:id
     async getById(req, res) {
         const transactionId = req.params.id;
-        // Lógica para buscar um usuário específico por ID
         try {
-            // Chamando o método estático do modelo para buscar todos as transações
             const transaction = await Transaction_1.Transaction.findById(transactionId);
             res.json(transaction);
         }
@@ -27,21 +22,20 @@ class TransactionController {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
-    // POST /api/users
     async create(req, res) {
         try {
-            const { value, type, recurrence, number_recurrence, date_transacation, description, tags, user_id } = req.body;
-            // Validar os dados recebidos da requisição (opcional)
+            console.log('[00]', req.body);
+            const { value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
             const newTransaction = await Transaction_1.Transaction.create({
                 value,
                 type,
                 recurrence,
                 number_recurrence,
-                date_transacation,
+                date_transaction,
                 description,
                 tags,
-                user_id,
+                user_id: "72bb4a6f-2633-4204-8115-38d3437d45e9" //user_id,
             });
             // Retornar a transação criada como resposta
             res.status(201).json(newTransaction);
@@ -52,15 +46,48 @@ class TransactionController {
             res.status(500).json({ error: 'Erro interno do servidor' });
         }
     }
-    // PUT /api/users/:id
-    update(req, res) {
+    async update(req, res) {
         const userId = req.params.id;
-        // Lógica para atualizar um usuário existente por ID
+        try {
+            const { id, value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
+            // Criar a transação utilizando o método estático create do modelo
+            const updatedTransaction = await Transaction_1.Transaction.update({
+                id,
+                value,
+                type,
+                recurrence,
+                number_recurrence,
+                date_transaction,
+                description,
+                tags,
+                user_id: "72bb4a6f-2633-4204-8115-38d3437d45e9" //user_id,
+            });
+            // Retornar a transação criada como resposta
+            res.status(200).json(updatedTransaction);
+        }
+        catch (error) {
+            // Se houver um erro, retornar uma resposta de erro
+            console.error('Erro ao atualizar transação:', error);
+            res.status(500).json({ error: 'Erro interno do servidor' });
+        }
     }
-    // DELETE /api/users/:id
-    delete(req, res) {
-        const userId = req.params.id;
-        // Lógica para excluir um usuário por ID
+    async delete(req, res) {
+        try {
+            console.log('[00]', req.params);
+            const { id } = req.params;
+            // Criar a transação utilizando o método estático create do modelo
+            await Transaction_1.Transaction.delete({
+                id
+            });
+            //console.log('deletedTransaction: ', deletedTransaction);
+            // Retornar a transação criada como resposta
+            res.status(200).json(true);
+        }
+        catch (error) {
+            // Se houver um erro, retornar uma resposta de erro
+            console.error('Erro ao deletar transação:', error);
+            res.status(500).json({ error: 'Erro interno do servidor' });
+        }
     }
 }
 exports.TransactionController = TransactionController;

@@ -3,9 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transaction = void 0;
 const prisma_1 = require("../lib/prisma");
 class Transaction {
-    // Métodos para manipular transações3
     static async findAll() {
-        const transactions = await prisma_1.prisma.transaction.findMany();
+        const transactions = await prisma_1.prisma.transaction.findMany().catch(err => err.message);
         if (!transactions)
             return [];
         return transactions;
@@ -18,13 +17,14 @@ class Transaction {
     }
     static async create(data) {
         try {
+            console.log('create ', data);
             const newTransaction = await prisma_1.prisma.transaction.create({
                 data: {
                     value: data.value,
                     type: data.type,
                     recurrence: data.recurrence,
                     number_recurrence: data.number_recurrence,
-                    date_transacation: data.date_transacation,
+                    date_transaction: data.date_transaction,
                     description: data.description,
                     tags: { set: data.tags }, // Assuming tags is an array of strings
                     user_id: data.user_id,
@@ -34,10 +34,51 @@ class Transaction {
         }
         catch (error) {
             // Handle error appropriately
+            throw new Error(`Failed to create transaction: ${error}`);
+        }
+    }
+    static async update(data) {
+        try {
+            console.log('update ', data);
+            const updatedTransaction = await prisma_1.prisma.transaction.update({
+                where: {
+                    id: data.id,
+                },
+                data: {
+                    value: data.value,
+                    type: data.type,
+                    recurrence: data.recurrence,
+                    number_recurrence: data.number_recurrence,
+                    date_transaction: data.date_transaction,
+                    description: data.description,
+                    tags: { set: data.tags },
+                    user_id: data.user_id,
+                    updatedAt: new Date()
+                },
+            }).catch(err => { console.log('error', err); });
+            //console.log('updatedTransaction: ', updatedTransaction);
+            return {}; //(updatedTransaction);
+        }
+        catch (error) {
+            // Handle error appropriately
+            throw new Error('Failed to update transaction');
+        }
+    }
+    static async delete(data) {
+        try {
+            await prisma_1.prisma.transaction.delete({
+                where: {
+                    id: data.id
+                },
+            }).catch(error => console.log('aaaaaaaa', error));
+            //console.log('delete: ', deletedTransaction);
+            return true;
+        }
+        catch (error) {
+            // Handle error appropriately
             throw new Error('Failed to create transaction');
         }
     }
-    // Outros métodos de manipulação de usuários...
     // Atributos do modelo
     id;
     createdAt;
@@ -46,7 +87,7 @@ class Transaction {
     type;
     recurrence;
     number_recurrence;
-    date_transacation;
+    date_transaction;
     description;
     tags;
     user_id;
@@ -58,7 +99,7 @@ class Transaction {
         this.type = prismaTransaction.type;
         this.recurrence = prismaTransaction.recurrence;
         this.number_recurrence = prismaTransaction.number_recurrence;
-        this.date_transacation = prismaTransaction.date_transacation;
+        this.date_transaction = prismaTransaction.date_transaction;
         this.description = prismaTransaction.description;
         this.tags = prismaTransaction.tags;
         this.user_id = prismaTransaction.user_id;

@@ -22,7 +22,7 @@ model Transaction {
   type              String
   recurrence        Boolean
   number_recurrence Int
-  date_transacation DateTime
+  date_transaction  DateTime
   description       String
   tags              String[]
   user              User     @relation(fields: [user_id], references: [id])

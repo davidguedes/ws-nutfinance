@@ -1,37 +1,30 @@
 import { Request, Response } from 'express';
 import { Transaction } from '../models/Transaction';
+import { Transaction as PrismaTransaction } from '@prisma/client';
 
 export class TransactionController {
-    // GET /api/users
     public async getAll(req: Request, res: Response): Promise<void> {
         try {
-            // Chamando o método estático do modelo para buscar todos os usuários
-            const transactions = await Transaction.findAll();
+            const transactions: PrismaTransaction[] = await Transaction.findAll();
             res.json(transactions);
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 
-    // GET /api/users/:id
     public async getById(req: Request, res: Response): Promise<void> {
         const transactionId = req.params.id;
-        // Lógica para buscar um usuário específico por ID
         try {
-            // Chamando o método estático do modelo para buscar todos as transações
             const transaction = await Transaction.findById(transactionId);
             res.json(transaction);
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
-
-    // POST /api/users
     public async create(req: Request, res: Response): Promise<void> {
         try {
-            const { value, type, recurrence, number_recurrence, date_transacation, description, tags, user_id } = req.body;
-
-            // Validar os dados recebidos da requisição (opcional)
+            console.log('[00]', req.body);
+            const { value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
             const newTransaction = await Transaction.create({
@@ -39,10 +32,10 @@ export class TransactionController {
                 type,
                 recurrence,
                 number_recurrence,
-                date_transacation,
+                date_transaction,
                 description,
                 tags,
-                user_id,
+                user_id: "72bb4a6f-2633-4204-8115-38d3437d45e9"//user_id,
             });
 
             // Retornar a transação criada como resposta
@@ -54,16 +47,51 @@ export class TransactionController {
         }
     }
 
-    // PUT /api/users/:id
-    public update(req: Request, res: Response): void {
+    public async update(req: Request, res: Response): Promise<void> {
         const userId = req.params.id;
-        // Lógica para atualizar um usuário existente por ID
+        try {
+            const { id, value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
+
+            // Criar a transação utilizando o método estático create do modelo
+            const updatedTransaction = await Transaction.update({
+                id,
+                value,
+                type,
+                recurrence,
+                number_recurrence,
+                date_transaction,
+                description,
+                tags,
+                user_id: "72bb4a6f-2633-4204-8115-38d3437d45e9"//user_id,
+            });
+
+            // Retornar a transação criada como resposta
+            res.status(200).json(updatedTransaction);
+        } catch (error) {
+            // Se houver um erro, retornar uma resposta de erro
+            console.error('Erro ao atualizar transação:', error);
+            res.status(500).json({ error: 'Erro interno do servidor' });
+        }
     }
 
-    // DELETE /api/users/:id
-    public delete(req: Request, res: Response): void {
-        const userId = req.params.id;
-        // Lógica para excluir um usuário por ID
+    public async delete(req: Request, res: Response): Promise<void> {
+        try {
+            console.log('[00]', req.params);
+            const { id } = req.params;
+
+            // Criar a transação utilizando o método estático create do modelo
+            await Transaction.delete({
+                id
+            });
+
+            //console.log('deletedTransaction: ', deletedTransaction);
+            // Retornar a transação criada como resposta
+            res.status(200).json(true);
+        } catch (error) {
+            // Se houver um erro, retornar uma resposta de erro
+            console.error('Erro ao deletar transação:', error);
+            res.status(500).json({ error: 'Erro interno do servidor' });
+        }
     }
 }
 
