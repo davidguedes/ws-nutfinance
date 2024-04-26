@@ -7,7 +7,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigins = [process.env.HOST];
+const allowedOrigins = [process.env.HOST || 'http://localhost:4200'];
 
 const options: cors.CorsOptions = {
   origin: allowedOrigins

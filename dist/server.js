@@ -9,8 +9,8 @@ const index_1 = __importDefault(require("./routes/index"));
 const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT =  || 3000;
-const allowedOrigins = [process.env.HOST];
+const PORT = process.env.PORT || 3000;
+const allowedOrigins = [process.env.HOST || 'http://localhost:4200'];
 const options = {
     origin: allowedOrigins
 };
