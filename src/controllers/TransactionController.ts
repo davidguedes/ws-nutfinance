@@ -5,7 +5,8 @@ import { Transaction as PrismaTransaction } from '@prisma/client';
 export class TransactionController {
     public async getAll(req: Request, res: Response): Promise<void> {
         try {
-            const transactions: PrismaTransaction[] = await Transaction.findAll();
+            const { first, last } = req.query;
+            const transactions: PrismaTransaction[] = await Transaction.findAll(Number(first), Number(last));
             res.json(transactions);
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });

@@ -3,8 +3,17 @@ import { prisma } from "../lib/prisma"
 
 export class Transaction {
 
-    public static async findAll(): Promise<Transaction[] | []> {
-        const transactions = await prisma.transaction.findMany().catch(err => err.message);
+    public static async findAll(first: number, last: number): Promise<Transaction[] | []> {
+        console.log('O first: ', first, ' last: ', last);
+        const transactions = await prisma.transaction.findMany({
+            skip: first, // Pula os registros anteriores ao primeiro registro desejado - Index do ponto onde preciso que parta esses registros
+            take: last, // Quantidade de registros a serem retornados - Exmeplo: Quero sempre que retorne 5 registros
+            orderBy: {
+                date_transaction: 'desc', // 'asc' para ordenação ascendente, 'desc' para ordenação descendente
+            }
+        }).catch(err => err.message);
+
+        console.log('transactions:? ', transactions)
         if (!transactions) return [];
         return transactions;
     }
