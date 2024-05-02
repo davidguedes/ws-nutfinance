@@ -1,16 +1,48 @@
-import { Transaction as PrismaTransaction } from '@prisma/client';
+import { Prisma, Transaction as PrismaTransaction } from '@prisma/client';
 import { prisma } from "../lib/prisma"
 
 export class Transaction {
 
-    public static async findAll(first: number, last: number): Promise<Transaction[] | []> {
-        console.log('O first: ', first, ' last: ', last);
+    public static async findAll(first: number, initial_date_transaction: Date | null, final_date_transaction: Date | null, tags: string[] | null, type: string | null): Promise<Transaction[] | []> {
+        console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type);
+
+        let filter: Prisma.TransactionWhereInput = {} as Prisma.TransactionWhereInput;
+
+        if (initial_date_transaction && final_date_transaction) {
+            filter.date_transaction = {
+                in: [initial_date_transaction, final_date_transaction]
+            };
+        } else if (initial_date_transaction && !final_date_transaction) {
+            filter.date_transaction = {
+                lt: initial_date_transaction
+            };
+        } else if (!initial_date_transaction && final_date_transaction) {
+            filter.date_transaction = {
+                gt: final_date_transaction
+            };
+        }
+
+        if (tags && tags.length > 0) {
+            filter.tags = {
+                hasSome: tags
+            }
+        }
+    
+        if (type) {
+            filter.type = {
+                equals: type
+            };
+        }
+
+        console.log('filter: ', filter);
+
         const transactions = await prisma.transaction.findMany({
             skip: first, // Pula os registros anteriores ao primeiro registro desejado - Index do ponto onde preciso que parta esses registros
-            take: last, // Quantidade de registros a serem retornados - Exmeplo: Quero sempre que retorne 5 registros
+            take: 10, // Quantidade de registros a serem retornados - Exmeplo: Quero sempre que retorne 5 registros
             orderBy: {
                 date_transaction: 'desc', // 'asc' para ordenação ascendente, 'desc' para ordenação descendente
-            }
+            },
+            where: filter
         }).catch(err => err.message);
 
         console.log('transactions:? ', transactions)
@@ -46,7 +78,7 @@ export class Transaction {
                     number_recurrence: data.number_recurrence,
                     date_transaction: data.date_transaction,
                     description: data.description,
-                    tags: { set: data.tags }, // Assuming tags is an array of strings
+                    tags: data.tags, // Assuming tags is an array of strings
                     user_id: data.user_id,
                 },
             }).then((resp: Transaction) => {
