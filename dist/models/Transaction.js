@@ -3,8 +3,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transaction = void 0;
 const prisma_1 = require("../lib/prisma");
 class Transaction {
-    static async findAll() {
-        const transactions = await prisma_1.prisma.transaction.findMany().catch(err => err.message);
+    static async findAll(first, initial_date_transaction, final_date_transaction, tags, type) {
+        console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type);
+        let filter = {};
+        if (initial_date_transaction && final_date_transaction) {
+            filter.date_transaction = {
+                in: [initial_date_transaction, final_date_transaction]
+            };
+        }
+        else if (initial_date_transaction && !final_date_transaction) {
+            filter.date_transaction = {
+                lt: initial_date_transaction
+            };
+        }
+        else if (!initial_date_transaction && final_date_transaction) {
+            filter.date_transaction = {
+                gt: final_date_transaction
+            };
+        }
+        if (tags && tags.length > 0) {
+            filter.tags = {
+                hasSome: tags
+            };
+        }
+        if (type) {
+            filter.type = {
+                equals: type
+            };
+        }
+        console.log('filter: ', filter);
+        const transactions = await prisma_1.prisma.transaction.findMany({
+            skip: first, // Pula os registros anteriores ao primeiro registro desejado - Index do ponto onde preciso que parta esses registros
+            take: 10, // Quantidade de registros a serem retornados - Exmeplo: Quero sempre que retorne 5 registros
+            orderBy: {
+                date_transaction: 'desc', // 'asc' para ordenação ascendente, 'desc' para ordenação descendente
+            },
+            where: filter
+        }).catch(err => err.message);
+        console.log('transactions:? ', transactions);
         if (!transactions)
             return [];
         return transactions;
@@ -27,7 +63,7 @@ class Transaction {
                     number_recurrence: data.number_recurrence,
                     date_transaction: data.date_transaction,
                     description: data.description,
-                    tags: { set: data.tags }, // Assuming tags is an array of strings
+                    tags: data.tags, // Assuming tags is an array of strings
                     user_id: data.user_id,
                 },
             }).then((resp) => {

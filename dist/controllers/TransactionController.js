@@ -5,7 +5,14 @@ const Transaction_1 = require("../models/Transaction");
 class TransactionController {
     async getAll(req, res) {
         try {
-            const transactions = await Transaction_1.Transaction.findAll();
+            let { first, initial_date_transaction, final_date_transaction, tags, type } = req.query;
+            console.log('req.query: ', req.query);
+            let valueFirst = first ? Number(first) : 0;
+            let value_initial_date_transaction = initial_date_transaction ? new Date(initial_date_transaction) : null;
+            let value_final_date_transaction = final_date_transaction ? new Date(final_date_transaction) : null;
+            let valueTags = tags ? tags.split(',') : null;
+            let valueType = type ? type : null;
+            const transactions = await Transaction_1.Transaction.findAll(valueFirst, value_initial_date_transaction, value_final_date_transaction, valueTags, valueType);
             res.json(transactions);
         }
         catch (error) {
