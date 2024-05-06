@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transaction = void 0;
 const prisma_1 = require("../lib/prisma");
 class Transaction {
-    static async findAll(first, initial_date_transaction, final_date_transaction, tags, type) {
-        console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type);
+    static async findAll(first, initial_date_transaction, final_date_transaction, tags, type, sort) {
+        console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
         let filter = {};
         if (initial_date_transaction && final_date_transaction) {
             filter.date_transaction = {
@@ -36,11 +36,11 @@ class Transaction {
             skip: first, // Pula os registros anteriores ao primeiro registro desejado - Index do ponto onde preciso que parta esses registros
             take: 10, // Quantidade de registros a serem retornados - Exmeplo: Quero sempre que retorne 5 registros
             orderBy: {
-                date_transaction: 'desc', // 'asc' para ordenação ascendente, 'desc' para ordenação descendente
+                date_transaction: sort ? 'desc' : 'asc', // 'asc' para ordenação ascendente, 'desc' para ordenação descendente
             },
             where: filter
         }).catch(err => err.message);
-        console.log('transactions:? ', transactions);
+        //console.log('transactions:? ', transactions)
         if (!transactions)
             return [];
         return transactions;
