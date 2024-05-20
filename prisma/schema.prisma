@@ -33,7 +33,25 @@ model User {
   id           String        @id @default(uuid())
   name         String
   email        String        @unique
+  password     String        @unique
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  closingDate  Int           @default(1)
+  status       Boolean       @default(true)
   transactions Transaction[]
+  fixed        Fixed[]
+}
+
+model Fixed {
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  value          Float
+  type           String
+  date_inclusion DateTime
+  description    String
+  tags           String[]
+  status         Boolean  @default(true)
+  user           User     @relation(fields: [user_id], references: [id])
+  user_id        String
 }

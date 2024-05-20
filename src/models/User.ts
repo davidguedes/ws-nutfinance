@@ -19,19 +19,21 @@ export class User {
     public static async create(data: {
         name: string;
         email: string;
+        password: string;
     }): Promise<User> {
         try {
             const newUser = await prisma.user.create({
                 data: {
                     name: data.name,
-                    email: data.email
+                    email: data.email,
+                    password: data.password
                 },
             });
     
             return new User(newUser);
         } catch (error) {
             // Handle error appropriately
-            throw new Error('Failed to create user');
+            throw new Error(`Failed to create user: ${error}`);
         }
     }
 

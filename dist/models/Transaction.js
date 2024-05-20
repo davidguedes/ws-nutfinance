@@ -13,12 +13,12 @@ class Transaction {
         }
         else if (initial_date_transaction && !final_date_transaction) {
             filter.date_transaction = {
-                lt: initial_date_transaction
+                gt: initial_date_transaction
             };
         }
         else if (!initial_date_transaction && final_date_transaction) {
             filter.date_transaction = {
-                gt: final_date_transaction
+                lt: final_date_transaction
             };
         }
         if (tags && tags.length > 0) {

@@ -29,14 +29,15 @@ export class UserController {
     // POST /api/users
     public async create(req: Request, res: Response): Promise<void> {
         try {
-            const { name, email} = req.body;
+            const { name, email, password} = req.body;
 
             // Validar os dados recebidos da requisição (opcional)
 
             // Criar a transação utilizando o método estático create do modelo
             const newUser = await User.create({
                 name,
-                email
+                email,
+                password
             });
 
             // Retornar o usuário criada como resposta

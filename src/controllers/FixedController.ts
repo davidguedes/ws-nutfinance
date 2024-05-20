@@ -1,31 +1,32 @@
 import { Request, Response } from 'express';
-import { Transaction } from '../models/Transaction';
-import { Transaction as PrismaTransaction } from '@prisma/client';
+import { Fixed } from '../models/Fixed';
 
-export class TransactionController {
+export class FixedController {
     public async getAll(req: Request, res: Response): Promise<void> {
         try {
-            let { first, initial_date_transaction, final_date_transaction, tags, type, sort } = req.query;
+            let { first, rows, description, date_inclusion, tags, status, type, sort } = req.query;
 
             console.log('req.query: ', req.query);
             let valueFirst: number = first ? Number(first) : 0;
-            let value_initial_date_transaction: Date | null = initial_date_transaction ? new Date(initial_date_transaction as string) : null;
-            let value_final_date_transaction: Date | null = final_date_transaction ? new Date(final_date_transaction as string) : null;
+            let valueRows: number = rows ? Number(rows) : 0;
+            let value_description: string | null = description ? description as string : null;
+            let value_date_inclusion: Date | null = date_inclusion ? new Date(date_inclusion as string) : null;
             let valueTags: string[] | null = tags ? (tags as string).split(',') : null;
+            let valueStatus = status === 'false' ? false : true;
             let valueType = type === 'true' ? 'R' : type === 'false' ? 'D' : null;
             let valueSort = sort === 'false' ? false : true;
 
-            const transactions: PrismaTransaction[] = await Transaction.findAll(valueFirst, value_initial_date_transaction, value_final_date_transaction, valueTags, valueType, valueSort);
-            res.json(transactions);
+            const data = await Fixed.findAll(valueFirst, valueRows, value_description, value_date_inclusion, valueTags, valueStatus, valueType, valueSort);
+            res.json({totalRecords: data.totalRecords, records: data.records});
         } catch (error) {
-            res.status(500).json({ error: `Internal Server Error: ${error}` });
+            res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 
     public async getById(req: Request, res: Response): Promise<void> {
         const transactionId = req.params.id;
         try {
-            const transaction = await Transaction.findById(transactionId);
+            const transaction = await Fixed.findById(transactionId);
             res.json(transaction);
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });
@@ -34,25 +35,22 @@ export class TransactionController {
     public async create(req: Request, res: Response): Promise<void> {
         try {
             console.log('[00]', req.body);
-            const { value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
+            const { value, type, date_inclusion, description, tags, user_id } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
-            const newTransaction = await Transaction.create({
+            const newFixed = await Fixed.create({
                 value,
                 type,
-                recurrence,
-                number_recurrence,
-                date_transaction,
+                date_inclusion,
                 description,
                 tags,
                 user_id: "3595e997-28f4-45b7-9f4b-768ee1352110"//user_id,
             });
 
-            // Retornar a transação criada como resposta
-            res.status(201).json(newTransaction);
+            res.status(201).json(newFixed);
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao criar transação:', error);
+            console.error('Erro ao criar fixa:', error);
             res.status(500).json({ error: 'Erro interno do servidor' });
         }
     }
@@ -60,26 +58,24 @@ export class TransactionController {
     public async update(req: Request, res: Response): Promise<void> {
         const userId = req.params.id;
         try {
-            const { id, value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
+            const { id, value, type, date_inclusion, description, tags, user_id } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
-            const updatedTransaction = await Transaction.update({
+            const updatedFixed = await Fixed.update({
                 id,
                 value,
                 type,
-                recurrence,
-                number_recurrence,
-                date_transaction,
+                date_inclusion,
                 description,
                 tags,
                 user_id: "3595e997-28f4-45b7-9f4b-768ee1352110"//user_id,
             });
 
             // Retornar a transação criada como resposta
-            res.status(200).json(updatedTransaction);
+            res.status(200).json(updatedFixed);
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao atualizar transação:', error);
+            console.error('Erro ao atualizar fixa:', error);
             res.status(500).json({ error: 'Erro interno do servidor' });
         }
     }
@@ -90,7 +86,7 @@ export class TransactionController {
             const { id } = req.params;
 
             // Criar a transação utilizando o método estático create do modelo
-            await Transaction.delete({
+            await Fixed.delete({
                 id
             });
 
@@ -99,10 +95,10 @@ export class TransactionController {
             res.status(200).json(true);
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao deletar transação:', error);
+            console.error('Erro ao deletar fixa:', error);
             res.status(500).json({ error: 'Erro interno do servidor' });
         }
     }
 }
 
-export default new TransactionController();
+export default new FixedController();
