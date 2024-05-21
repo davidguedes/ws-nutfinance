@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Chart } from '../models/Chart';
-import { Transaction as PrismaTransaction } from '@prisma/client';
 
 export class ChartController {
     public async getFixed(req: Request, res: Response): Promise<void> {
