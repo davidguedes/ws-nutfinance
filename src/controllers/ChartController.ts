@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Chart } from '../models/Chart';
+import { ChartNut } from '../models/ChartNut';
 
 export class ChartController {
     public async getFixed(req: Request, res: Response): Promise<void> {
@@ -9,7 +9,7 @@ export class ChartController {
             console.log('req.query: ', req.query);
             let valueUserId: string = userId ? userId?.toString() : '';
 
-            const fixed: number = await Chart.getFixed(valueUserId);
+            const fixed: number = await ChartNut.getFixed(valueUserId);
             res.json(fixed);
         } catch (error) {
             res.status(500).json({ error: `Internal Server Error: ${error}` });
@@ -20,7 +20,7 @@ export class ChartController {
             let { userId } = req.query;
             let valueUserId: string = userId ? userId?.toString() : '';
 
-            const profit: number = await Chart.getProfit(valueUserId);
+            const profit: number = await ChartNut.getProfit(valueUserId);
 
             res.json(profit);
         } catch (error) {

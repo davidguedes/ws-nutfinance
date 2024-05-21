@@ -1,7 +1,7 @@
 import { Prisma, Transaction as PrismaTransaction } from '@prisma/client';
 import { prisma } from "../lib/prisma"
 
-export class Chart {
+export class ChartNut {
     public static async getFixed(userId: string): Promise<number> {
        let filter: Prisma.TransactionWhereInput = {} as Prisma.TransactionWhereInput;
 

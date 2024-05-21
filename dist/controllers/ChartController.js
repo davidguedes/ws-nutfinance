@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChartController = void 0;
-const Chart_1 = require("../models/Chart");
+const ChartNut_1 = require("../models/ChartNut");
 class ChartController {
     async getFixed(req, res) {
         try {
             let { userId } = req.query;
             console.log('req.query: ', req.query);
             let valueUserId = userId ? userId?.toString() : '';
-            const fixed = await Chart_1.Chart.getFixed(valueUserId);
+            const fixed = await ChartNut_1.ChartNut.getFixed(valueUserId);
             res.json(fixed);
         }
         catch (error) {
@@ -19,7 +19,7 @@ class ChartController {
         try {
             let { userId } = req.query;
             let valueUserId = userId ? userId?.toString() : '';
-            const profit = await Chart_1.Chart.getProfit(valueUserId);
+            const profit = await ChartNut_1.ChartNut.getProfit(valueUserId);
             res.json(profit);
         }
         catch (error) {
