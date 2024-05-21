@@ -21,14 +21,15 @@ class User {
             const newUser = await prisma_1.prisma.user.create({
                 data: {
                     name: data.name,
-                    email: data.email
+                    email: data.email,
+                    password: data.password
                 },
             });
             return new User(newUser);
         }
         catch (error) {
             // Handle error appropriately
-            throw new Error('Failed to create user');
+            throw new Error(`Failed to create user: ${error}`);
         }
     }
     // Outros métodos de manipulação de usuários...

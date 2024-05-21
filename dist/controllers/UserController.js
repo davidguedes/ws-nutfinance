@@ -30,12 +30,13 @@ class UserController {
     // POST /api/users
     async create(req, res) {
         try {
-            const { name, email } = req.body;
+            const { name, email, password } = req.body;
             // Validar os dados recebidos da requisição (opcional)
             // Criar a transação utilizando o método estático create do modelo
             const newUser = await User_1.User.create({
                 name,
-                email
+                email,
+                password
             });
             // Retornar o usuário criada como resposta
             res.status(201).json(newUser);

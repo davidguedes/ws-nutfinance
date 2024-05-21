@@ -4,19 +4,19 @@ import { Fixed } from '../models/Fixed';
 export class FixedController {
     public async getAll(req: Request, res: Response): Promise<void> {
         try {
-            let { first, rows, description, date_inclusion, tags, status, type, sort } = req.query;
+            let { first, rows, description, day_inclusion, tags, status, type, sort } = req.query;
 
             console.log('req.query: ', req.query);
             let valueFirst: number = first ? Number(first) : 0;
             let valueRows: number = rows ? Number(rows) : 0;
             let value_description: string | null = description ? description as string : null;
-            let value_date_inclusion: Date | null = date_inclusion ? new Date(date_inclusion as string) : null;
+            let value_day_inclusion: number | null = day_inclusion ? Number(day_inclusion) : null;
             let valueTags: string[] | null = tags ? (tags as string).split(',') : null;
             let valueStatus = status === 'false' ? false : true;
             let valueType = type === 'true' ? 'R' : type === 'false' ? 'D' : null;
             let valueSort = sort === 'false' ? false : true;
 
-            const data = await Fixed.findAll(valueFirst, valueRows, value_description, value_date_inclusion, valueTags, valueStatus, valueType, valueSort);
+            const data = await Fixed.findAll(valueFirst, valueRows, value_description, value_day_inclusion, valueTags, valueStatus, valueType, valueSort);
             res.json({totalRecords: data.totalRecords, records: data.records});
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });
@@ -35,13 +35,13 @@ export class FixedController {
     public async create(req: Request, res: Response): Promise<void> {
         try {
             console.log('[00]', req.body);
-            const { value, type, date_inclusion, description, tags, user_id } = req.body.data;
+            const { value, type, day_inclusion, description, tags, user_id } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
             const newFixed = await Fixed.create({
                 value,
                 type,
-                date_inclusion,
+                day_inclusion,
                 description,
                 tags,
                 user_id: "3595e997-28f4-45b7-9f4b-768ee1352110"//user_id,
@@ -58,14 +58,14 @@ export class FixedController {
     public async update(req: Request, res: Response): Promise<void> {
         const userId = req.params.id;
         try {
-            const { id, value, type, date_inclusion, description, tags, user_id } = req.body.data;
+            const { id, value, type, day_inclusion, description, tags, user_id } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
             const updatedFixed = await Fixed.update({
                 id,
                 value,
                 type,
-                date_inclusion,
+                day_inclusion,
                 description,
                 tags,
                 user_id: "3595e997-28f4-45b7-9f4b-768ee1352110"//user_id,
