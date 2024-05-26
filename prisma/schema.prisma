@@ -27,6 +27,8 @@ model Transaction {
   tags              String[]
   user              User     @relation(fields: [user_id], references: [id])
   user_id           String
+  closing           Closing? @relation(fields: [closing_id], references: [id])
+  closing_id        String?
 }
 
 model User {
@@ -40,6 +42,7 @@ model User {
   status       Boolean       @default(true)
   transactions Transaction[]
   fixed        Fixed[]
+  Closing      Closing[]
 }
 
 model Fixed {
@@ -54,4 +57,16 @@ model Fixed {
   status        Boolean  @default(true)
   user          User     @relation(fields: [user_id], references: [id])
   user_id       String
+}
+
+model Closing {
+  id           String        @id @default(uuid())
+  createdAt    DateTime      @default(now())
+  balance      Float
+  spending     Float
+  initialDate  DateTime
+  finalDate    DateTime
+  user         User          @relation(fields: [user_id], references: [id])
+  user_id      String
+  transactions Transaction[]
 }

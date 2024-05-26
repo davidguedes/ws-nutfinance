@@ -44,7 +44,7 @@ export class FixedController {
                 day_inclusion,
                 description,
                 tags,
-                user_id: "3595e997-28f4-45b7-9f4b-768ee1352110"//user_id,
+                user_id: user_id
             });
 
             res.status(201).json(newFixed);
@@ -56,7 +56,7 @@ export class FixedController {
     }
 
     public async update(req: Request, res: Response): Promise<void> {
-        const userId = req.params.id;
+        const user_id = req.params.id;
         try {
             const { id, value, type, day_inclusion, description, tags, user_id } = req.body.data;
 
@@ -68,7 +68,7 @@ export class FixedController {
                 day_inclusion,
                 description,
                 tags,
-                user_id: "3595e997-28f4-45b7-9f4b-768ee1352110"//user_id,
+                user_id: user_id
             });
 
             // Retornar a transação criada como resposta

@@ -1,4 +1,4 @@
-import { User as PrismaUser, User } from '@prisma/client';
+import { User as PrismaUser } from '@prisma/client';
 import { prisma } from "../lib/prisma"
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 export class Auth {
     // Métodos para manipular usuários
 
-    public static async login(email: string, password: string): Promise<any | null> {
+    public static async login(email: string, password: string): Promise<{ token: string, user: PrismaUser }> {
         try {
             const user = await prisma.user.findUnique({ where: { email } });
         
@@ -22,10 +22,11 @@ export class Auth {
                 throw new Error(`Invalid email or password`);
             }
         
-            const token = jwt.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, 'your_jwt_secret', { expiresIn: '1h' });
+            const token = jwt.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '1h' });
         
             return { token, user };
         } catch (error) {
+            console.error(error);
             throw error;
         }
     }

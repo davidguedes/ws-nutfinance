@@ -15,11 +15,11 @@ export class UserController {
 
     // GET /api/users/:id
     public async getById(req: Request, res: Response): Promise<void> {
-        const userId = req.params.id;
+        const user_id = req.params.id;
         // Lógica para buscar um usuário específico por ID
         try {
             // Chamando o método estático do modelo para buscar todos os usuários
-            const user = await User.findById(userId);
+            const user = await User.findById(user_id);
             res.json(user);
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });
@@ -51,13 +51,13 @@ export class UserController {
 
     // PUT /api/users/:id
     public update(req: Request, res: Response): void {
-        const userId = req.params.id;
+        const user_id = req.params.id;
         // Lógica para atualizar um usuário existente por ID
     }
 
     // DELETE /api/users/:id
     public delete(req: Request, res: Response): void {
-        const userId = req.params.id;
+        const user_id = req.params.id;
         // Lógica para excluir um usuário por ID
     }
 }

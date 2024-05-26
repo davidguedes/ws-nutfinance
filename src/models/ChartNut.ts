@@ -1,14 +1,12 @@
 import { Prisma } from '@prisma/client';
-import { prisma } from "../lib/prisma"
+import { prisma } from "../lib/prisma";
 
 export class Chartnut {
 
-    public static async getFixed(userId: string): Promise<number> {
-        let filter: Prisma.TransactionWhereInput = {} as Prisma.TransactionWhereInput;
- 
-         filter.user_id = {
-             equals: "3595e997-28f4-45b7-9f4b-768ee1352110"
-         };
+    public static async getFixed(user_id: string): Promise<number> {
+        let filter: Prisma.TransactionWhereInput = {
+            user_id: user_id
+        };
  
         // Obter a data atual
          const today = new Date();
@@ -19,34 +17,32 @@ export class Chartnut {
          // Último dia do mês atual
          const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
  
-         if (firstDayOfMonth && lastDayOfMonth) {
-             filter.date_transaction = {
-                 in: [firstDayOfMonth, lastDayOfMonth]
-             };
-         }
+         filter.date_transaction = {
+            gte: firstDayOfMonth,
+            lte: lastDayOfMonth
+        };
  
          console.log('filter: ', filter);
  
-         const fixed = await prisma.transaction.count({
-             //where: filter
-         }).catch(err => err.message);
- 
-         console.log('fixed:? ', fixed)
-         if (!fixed) return 0;
-         return fixed;
+         try {
+            const fixed = await prisma.transaction.count({
+                where: filter
+            });
+
+            console.log('fixed: ', fixed);
+            return fixed;
+        } catch (err) {
+            console.error('Error in getFixed: ', err);
+            return 0;
+        }
     }
  
-    public static async getProfit(userId: string): Promise<number> {
-         let filter: Prisma.TransactionWhereInput = {} as Prisma.TransactionWhereInput;
- 
-         filter.user_id = {
-             equals: "3595e997-28f4-45b7-9f4b-768ee1352110"
-         };
- 
-         filter.type = {
-             equals: 'R'
-         };
- 
+    public static async getProfit(user_id: string): Promise<number> {
+         let filter: Prisma.TransactionWhereInput = {
+            user_id: user_id,
+            type: 'R'
+        };
+
         // Obter a data atual
          const today = new Date();
  
@@ -56,65 +52,69 @@ export class Chartnut {
          // Último dia do mês atual
          const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
  
-         if (firstDayOfMonth && lastDayOfMonth) {
-             filter.date_transaction = {
-                 in: [firstDayOfMonth, lastDayOfMonth]
-             };
-         }
+        filter.date_transaction = {
+            gte: firstDayOfMonth,
+            lte: lastDayOfMonth
+        };
  
-         console.log('filter: ', filter);
+        console.log('filter: ', filter);
  
-         const profit = await prisma.transaction.groupBy({
-             by: ['user_id'],
-             _sum: {
-                 value: true,
-             },
-             //where: filter
-         }).catch(err => err.message);
- 
-         console.log('profit: ', profit);
- 
-         //console.log('transactions:? ', transactions)
-         if (!profit) return 0;
-         return profit[0]._sum.value;
+        try {
+            const profit = await prisma.transaction.groupBy({
+                by: ['user_id'],
+                _sum: {
+                    value: true,
+                },
+                where: filter
+            });
+
+            console.log('profit: ', profit);
+
+            if (!profit || profit.length === 0 || !profit[0]._sum.value) return 0;
+            return profit[0]._sum.value;
+        } catch (err) {
+            console.error('Error in getProfit: ', err);
+            return 0;
+        }
     }
- 
-    public static async getComparative(userId: string): Promise<any[]> {
-         let filter: Prisma.TransactionWhereInput = {} as Prisma.TransactionWhereInput;
- 
-         filter.user_id = {
-             equals: "3595e997-28f4-45b7-9f4b-768ee1352110"
-         };
+
+    public static async getComparative(user_id: string): Promise<any[]> {
+        let filter: Prisma.TransactionWhereInput = {
+            user_id: user_id
+        };
  
         // Obter a data atual
-         const today = new Date();
+        const today = new Date();
  
-         // Primeiro dia do mês atual
-         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        // Primeiro dia do mês atual
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
  
-         // Último dia do mês atual
-         const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        // Último dia do mês atual
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
  
-         if (firstDayOfMonth && lastDayOfMonth) {
-             filter.date_transaction = {
-                 in: [firstDayOfMonth, lastDayOfMonth]
-             };
-         }
+        filter.date_transaction = {
+            gte: firstDayOfMonth,
+            lte: lastDayOfMonth
+        };
  
          console.log('filter: ', filter);
  
-         const profit = await prisma.transaction.groupBy({
-             by: ['user_id'],
-             _sum: {
-                 value: true,
-             },
-             //where: filter
-         }).catch(err => err.message);
- 
-         console.log('profit: ', profit);
- 
-         //console.log('transactions:? ', transactions)
-         if (!profit) return [0];
-         return profit[0]._sum.value;
+        try {
+            const profit = await prisma.transaction.groupBy({
+                by: ['user_id'],
+                _sum: {
+                    value: true,
+                },
+                where: filter
+            });
+
+            console.log('profit: ', profit);
+
+            if (!profit || profit.length === 0) return [0];
+            return profit.map(p => p._sum.value);
+        } catch (err) {
+            console.error('Error in getComparative: ', err);
+            return [0];
+        }
     }
 }

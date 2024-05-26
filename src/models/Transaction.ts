@@ -3,22 +3,23 @@ import { prisma } from "../lib/prisma"
 
 export class Transaction {
 
-    public static async findAll(first: number, initial_date_transaction: Date | null, final_date_transaction: Date | null, tags: string[] | null, type: string | null, sort: boolean): Promise<Transaction[] | []> {
+    public static async findAll(first: number, initial_date_transaction: Date | null, final_date_transaction: Date | null, tags: string[] | null, type: string | null, sort: boolean): Promise<PrismaTransaction[] | []> {
         console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
 
-        let filter: Prisma.TransactionWhereInput = {} as Prisma.TransactionWhereInput;
+        let filter: Prisma.TransactionWhereInput = {};
 
         if (initial_date_transaction && final_date_transaction) {
             filter.date_transaction = {
-                in: [initial_date_transaction, final_date_transaction]
+                gte: initial_date_transaction,
+                lte: final_date_transaction
             };
-        } else if (initial_date_transaction && !final_date_transaction) {
+        } else if (initial_date_transaction) {
             filter.date_transaction = {
-                gt: initial_date_transaction
+                gte: initial_date_transaction
             };
-        } else if (!initial_date_transaction && final_date_transaction) {
+        } else if (final_date_transaction) {
             filter.date_transaction = {
-                lt: final_date_transaction
+                lte: final_date_transaction
             };
         }
 
@@ -36,24 +37,32 @@ export class Transaction {
 
         console.log('filter: ', filter);
 
-        const transactions = await prisma.transaction.findMany({
-            skip: first, // Pula os registros anteriores ao primeiro registro desejado - Index do ponto onde preciso que parta esses registros
-            take: 10, // Quantidade de registros a serem retornados - Exmeplo: Quero sempre que retorne 5 registros
-            orderBy: {
-                date_transaction: sort ? 'desc' : 'asc', // 'asc' para ordenação ascendente, 'desc' para ordenação descendente
-            },
-            where: filter
-        }).catch(err => err.message);
+        try {
+            const transactions = await prisma.transaction.findMany({
+                skip: first,
+                take: 10,
+                orderBy: {
+                    date_transaction: sort ? 'desc' : 'asc'
+                },
+                where: filter
+            });
 
-        //console.log('transactions:? ', transactions)
-        if (!transactions) return [];
-        return transactions;
+            return transactions;
+        } catch (err) {
+            console.error('Erro ao buscar transações: ', err);
+            return [];
+        }
     }
 
     public static async findById(id: string): Promise<Transaction | null> {
-        const transaction = await prisma.transaction.findUnique({ where: { id } });
-        if (!transaction) return null;
-        return new Transaction(transaction);
+        try {
+            const transaction = await prisma.transaction.findUnique({ where: { id } });
+            if (!transaction) return null;
+            return new Transaction(transaction);
+        } catch (err) {
+            console.error('Erro ao buscar transação por ID: ', err);
+            return null;
+        }
     }
 
     public static async create(data: {
@@ -67,10 +76,7 @@ export class Transaction {
         user_id: string;
     }): Promise<Transaction> {
         try {
-            console.log('create ', data);
-            let newTransaction: Transaction = {} as Transaction;
-            
-            await prisma.transaction.create({
+            const newTransaction = await prisma.transaction.create({
                 data: {
                     value: data.value,
                     type: data.type,
@@ -78,19 +84,14 @@ export class Transaction {
                     number_recurrence: data.number_recurrence,
                     date_transaction: data.date_transaction,
                     description: data.description,
-                    tags: data.tags, // Assuming tags is an array of strings
+                    tags: data.tags,
                     user_id: data.user_id,
-                },
-            }).then((resp: Transaction) => {
-                newTransaction = resp;
-            })
-            .catch(err => {
-                throw new Error(err);
+                }
             });
-    
-            return newTransaction;
+
+            return new Transaction(newTransaction);
         } catch (error) {
-            // Handle error appropriately
+            console.error('Failed to create transaction: ', error);
             throw new Error(`Failed to create transaction: ${error}`);
         }
     }
@@ -109,12 +110,8 @@ export class Transaction {
         try {
             console.log('update ', data);
 
-            let updatedTransaction: Transaction = {} as Transaction;
-            
-            await prisma.transaction.update({
-                where: {
-                    id: data.id,
-                },
+            const updatedTransaction = await prisma.transaction.update({
+                where: { id: data.id },
                 data: {
                     value: data.value,
                     type: data.type,
@@ -125,17 +122,12 @@ export class Transaction {
                     tags: { set: data.tags },
                     user_id: data.user_id,
                     updatedAt: new Date()
-                },
-            }).then((resp: Transaction) => {
-                updatedTransaction = resp;
-            })
-            .catch(err => {
-                throw new Error(err);
+                }
             });
-    
-            return updatedTransaction;
+
+            return new Transaction(updatedTransaction);
         } catch (error) {
-            // Handle error appropriately
+            console.error('Failed to update transaction: ', error);
             throw new Error(`Failed to update transaction: ${error}`);
         }
     }
@@ -145,22 +137,15 @@ export class Transaction {
     }): Promise<boolean> {
         try {
             await prisma.transaction.delete({
-                where: {
-                    id: data.id
-                },
-            }).catch(err => {
-                throw new Error(err);
+                where: { id: data.id }
             });
-
-            //console.log('delete: ', deletedTransaction);
-    
             return true;
         } catch (error) {
-            // Handle error appropriately
+            console.error('Failed to delete transaction: ', error);
             throw new Error(`Failed to delete transaction: ${error}`);
         }
     }
-    
+
     // Atributos do modelo
     public id: string;
     public createdAt: Date;
@@ -173,6 +158,7 @@ export class Transaction {
     public description: string;
     public tags: string[];
     public user_id: string;
+    public closing_id?: string | null;
 
     constructor(prismaTransaction: PrismaTransaction) {
         this.id = prismaTransaction.id;
@@ -186,5 +172,6 @@ export class Transaction {
         this.description = prismaTransaction.description;
         this.tags = prismaTransaction.tags;
         this.user_id = prismaTransaction.user_id;
+        this.closing_id = prismaTransaction.closing_id;
     }
 }

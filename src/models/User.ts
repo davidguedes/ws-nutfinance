@@ -5,15 +5,24 @@ export class User {
     // Métodos para manipular usuários
 
     public static async findAll(): Promise<User[] | []> {
-        const users = await prisma.user.findMany();
-        if (!users) return [];
-        return users;
+        try {
+            const users = await prisma.user.findMany();
+            return users.map(user => new User(user));
+        } catch (error) {
+            console.error('Failed to find all users: ', error);
+            return [];
+        }
     }
 
     public static async findById(id: string): Promise<User | null> {
-        const user = await prisma.user.findUnique({ where: { id } });
-        if (!user) return null;
-        return new User(user);
+        try {
+            const user = await prisma.user.findUnique({ where: { id } });
+            if (!user) return null;
+            return new User(user);
+        } catch (error) {
+            console.error('Failed to find user by ID: ', error);
+            return null;
+        }
     }
 
     public static async create(data: {
@@ -26,19 +35,17 @@ export class User {
                 data: {
                     name: data.name,
                     email: data.email,
-                    password: data.password
+                    password: data.password,
                 },
             });
-    
+
             return new User(newUser);
         } catch (error) {
-            // Handle error appropriately
+            console.error('Failed to create user: ', error);
             throw new Error(`Failed to create user: ${error}`);
         }
     }
 
-    // Outros métodos de manipulação de usuários...
-    
     // Atributos do modelo
     public id: string;
     public name: string;

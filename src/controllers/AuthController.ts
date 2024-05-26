@@ -7,7 +7,7 @@ export class AuthController {
         const { email, password } = req.body;
 
         try {
-            let {user, token} = await Auth.login(email, password);
+            let { token, user} = await Auth.login(email, password);
             
             res.json({user, token});
         } catch (error) {

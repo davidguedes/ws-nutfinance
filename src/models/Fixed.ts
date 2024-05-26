@@ -6,11 +6,7 @@ export class Fixed {
     public static async findAll(first: number, rows: number, description: string | null, day_inclusion: number | null, tags: string[] | null, status: boolean, type: string | null, sort: boolean): Promise<{ totalRecords: number, records: Fixed[] }> {
         console.log('O first: ', first, ' description: ', description, ' initial_date_transaction: ', day_inclusion, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
 
-        let filter: Prisma.FixedWhereInput = {} as Prisma.FixedWhereInput;
-
-        filter.status = {
-            equals: status
-        };
+        let filter: Prisma.FixedWhereInput =  { status };
 
         if (description) {
             filter.description = {
@@ -54,25 +50,22 @@ export class Fixed {
                 })
             ]);
     
-            // Retorna um objeto contendo a contagem total e os registros
-            return {
-                totalRecords,
-                records
-            };
+            return { totalRecords, records };
         } catch (err) {
             console.error('Erro ao buscar registros: ', err);
-            // Retorna 0 e uma lista vazia em caso de erro
-            return {
-                totalRecords: 0,
-                records: []
-            };
+            return { totalRecords: 0, records: [] };
         }
     }
 
     public static async findById(id: string): Promise<Fixed | null> {
-        const fixed = await prisma.fixed.findUnique({ where: { id } });
-        if (!fixed) return null;
-        return new Fixed(fixed);
+        try {
+            const fixed = await prisma.fixed.findUnique({ where: { id } });
+            if (!fixed) return null;
+            return new Fixed(fixed);
+        } catch (err) {
+            console.error('Erro ao buscar registro por ID: ', err);
+            return null;
+        }
     }
 
     public static async create(data: {
@@ -84,29 +77,21 @@ export class Fixed {
         user_id: string;
     }): Promise<Fixed> {
         try {
-            console.log('create ', data);
-            let newFixed: Fixed = {} as Fixed;
-            
-            await prisma.fixed.create({
+            const newFixed = await prisma.fixed.create({
                 data: {
                     value: data.value,
                     type: data.type,
                     day_inclusion: data.day_inclusion,
                     description: data.description,
-                    tags: data.tags, // Assuming tags is an array of strings
-                    user_id: data.user_id,
+                    tags: data.tags,
+                    user_id: data.user_id
                 },
-            }).then((resp: Fixed) => {
-                newFixed = resp;
-            })
-            .catch(err => {
-                throw new Error(err);
             });
-    
-            return newFixed;
+
+            return new Fixed(newFixed);
         } catch (error) {
-            // Handle error appropriately
-            throw new Error(`Failed to create transaction: ${error}`);
+            console.error('Failed to create fixed: ', error);
+            throw new Error(`Failed to create fixed: ${error}`);
         }
     }
 
@@ -122,12 +107,8 @@ export class Fixed {
         try {
             console.log('update ', data);
 
-            let updatedFixed: Fixed = {} as Fixed;
-            
-            await prisma.fixed.update({
-                where: {
-                    id: data.id,
-                },
+            const updatedFixed = await prisma.fixed.update({
+                where: { id: data.id },
                 data: {
                     value: data.value,
                     type: data.type,
@@ -137,16 +118,11 @@ export class Fixed {
                     user_id: data.user_id,
                     updatedAt: new Date()
                 },
-            }).then((resp: Fixed) => {
-                updatedFixed = resp;
-            })
-            .catch(err => {
-                throw new Error(err);
             });
-    
-            return updatedFixed;
+
+            return new Fixed(updatedFixed);
         } catch (error) {
-            // Handle error appropriately
+            console.error('Failed to update fixed: ', error);
             throw new Error(`Failed to update fixed: ${error}`);
         }
     }
@@ -156,19 +132,12 @@ export class Fixed {
     }): Promise<boolean> {
         try {
             await prisma.fixed.delete({
-                where: {
-                    id: data.id
-                },
-            }).catch(err => {
-                throw new Error(err);
+                where: { id: data.id }
             });
-
-            //console.log('delete: ', deletedTransaction);
-    
             return true;
         } catch (error) {
-            // Handle error appropriately
-            throw new Error(`Failed to delete transaction: ${error}`);
+            console.error('Failed to delete fixed: ', error);
+            throw new Error(`Failed to delete fixed: ${error}`);
         }
     }
     
