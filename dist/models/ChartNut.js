@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChartNut = void 0;
+exports.Chartnut = void 0;
 const prisma_1 = require("../lib/prisma");
-class ChartNut {
+class Chartnut {
     static async getFixed(userId) {
         let filter = {};
         filter.user_id = {
@@ -91,30 +91,5 @@ class ChartNut {
             return [0];
         return profit[0]._sum.value;
     }
-    // Atributos do modelo
-    id;
-    createdAt;
-    updatedAt;
-    value;
-    type;
-    recurrence;
-    number_recurrence;
-    date_transaction;
-    description;
-    tags;
-    user_id;
-    constructor(prismaTransaction) {
-        this.id = prismaTransaction.id;
-        this.createdAt = prismaTransaction.createdAt;
-        this.updatedAt = prismaTransaction.updatedAt;
-        this.value = prismaTransaction.value;
-        this.type = prismaTransaction.type;
-        this.recurrence = prismaTransaction.recurrence;
-        this.number_recurrence = prismaTransaction.number_recurrence;
-        this.date_transaction = prismaTransaction.date_transaction;
-        this.description = prismaTransaction.description;
-        this.tags = prismaTransaction.tags;
-        this.user_id = prismaTransaction.user_id;
-    }
 }
-exports.ChartNut = ChartNut;
+exports.Chartnut = Chartnut;
