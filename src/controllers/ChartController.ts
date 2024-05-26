@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Chartnut } from '../models/Chartnut';
+import { Auth } from '../models/Auth';
 
 export class ChartController {
     public async getFixed(req: Request, res: Response): Promise<void> {
@@ -14,7 +14,7 @@ export class ChartController {
                 return;
             }
 
-            const fixed = await Chartnut.getFixed(user_id);
+            const fixed = await Auth.getFixed(user_id);
             res.json(fixed);
         } catch (error) {
             console.error('Error in getFixed:', error);
@@ -30,7 +30,7 @@ export class ChartController {
                 return;
             }
 
-            const profit = await Chartnut.getProfit(user_id);
+            const profit = await Auth.getProfit(user_id);
             res.json(profit);
         } catch (error) {
             console.error('Error in getProfit:', error);
@@ -46,7 +46,7 @@ export class ChartController {
                 return;
             }
 
-            const profit = await Chartnut.getComparative(user_id);
+            const profit = await Auth.getComparative(user_id);
             res.json(profit);
         } catch (error) {
             console.error('Error in getComparative:', error);

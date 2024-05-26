@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Auth } from '../models/Auth';
+import { Chartnut } from '../models/Chartnut';
 
 export class AuthController {
     // GET /api/users

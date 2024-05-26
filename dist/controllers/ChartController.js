@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChartController = void 0;
-const Chartnut_1 = require("../models/Chartnut");
+const Auth_1 = require("../models/Auth");
 class ChartController {
     async getFixed(req, res) {
         try {
@@ -13,7 +13,7 @@ class ChartController {
                 res.status(400).json({ error: 'user_id is required' });
                 return;
             }
-            const fixed = await Chartnut_1.Chartnut.getFixed(user_id);
+            const fixed = await Auth_1.Auth.getFixed(user_id);
             res.json(fixed);
         }
         catch (error) {
@@ -28,7 +28,7 @@ class ChartController {
                 res.status(400).json({ error: 'user_id is required' });
                 return;
             }
-            const profit = await Chartnut_1.Chartnut.getProfit(user_id);
+            const profit = await Auth_1.Auth.getProfit(user_id);
             res.json(profit);
         }
         catch (error) {
@@ -43,7 +43,7 @@ class ChartController {
                 res.status(400).json({ error: 'user_id is required' });
                 return;
             }
-            const profit = await Chartnut_1.Chartnut.getComparative(user_id);
+            const profit = await Auth_1.Auth.getComparative(user_id);
             res.json(profit);
         }
         catch (error) {
