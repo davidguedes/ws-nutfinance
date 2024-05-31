@@ -3,11 +3,15 @@ import { prisma } from "../lib/prisma"
 
 export class Fixed {
 
-    public static async findAll(first: number, rows: number, description: string | null, day_inclusion: number | null, tags: string[] | null, status: boolean, type: string | null, sort: boolean): Promise<{ totalRecords: number, records: Fixed[] }> {
+    public static async findAll(user_id: string, first: number, rows: number, description: string | null, day_inclusion: number | null, tags: string[] | null, status: boolean, type: string | null, sort: boolean): Promise<{ totalRecords: number, records: Fixed[] }> {
         console.log('O first: ', first, ' description: ', description, ' initial_date_transaction: ', day_inclusion, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
 
         let filter: Prisma.FixedWhereInput =  { status };
 
+        filter.user_id = {
+            equals: user_id
+        };
+        
         if (description) {
             filter.description = {
                 contains: description

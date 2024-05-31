@@ -3,9 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transaction = void 0;
 const prisma_1 = require("../lib/prisma");
 class Transaction {
-    static async findAll(first, initial_date_transaction, final_date_transaction, tags, type, sort) {
+    static async findAll(user_id, first, initial_date_transaction, final_date_transaction, tags, type, sort) {
         console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
         let filter = {};
+        filter.user_id = {
+            equals: user_id
+        };
         if (initial_date_transaction && final_date_transaction) {
             filter.date_transaction = {
                 gte: initial_date_transaction,

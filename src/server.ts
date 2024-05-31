@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import routes from './routes/index';
 import cors from 'cors';
+//import './FixedCron';
+//import './closingCron';
 
 dotenv.config();
 const app = express();

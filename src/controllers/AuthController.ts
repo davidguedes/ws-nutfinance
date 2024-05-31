@@ -10,6 +10,9 @@ export class AuthController {
         try {
             let { token, user} = await Auth.login(email, password);
             
+            const fixed = await Chartnut.getFixed('null');
+            console.log('O fixed ', fixed);
+
             res.json({user, token});
         } catch (error) {
             res.status(500).json({ error: 'Internal Server Error' });

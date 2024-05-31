@@ -5,9 +5,14 @@ import { Transaction as PrismaTransaction } from '@prisma/client';
 export class TransactionController {
     public async getAll(req: Request, res: Response): Promise<void> {
         try {
-            let { first, initial_date_transaction, final_date_transaction, tags, type, sort } = req.query;
+            let { user_id, first, initial_date_transaction, final_date_transaction, tags, type, sort } = req.query;
 
             console.log('req.query: ', req.query);
+            if(!user_id) {
+                throw new Error('Operação inválida! Sem dados de usuário.');
+            }
+
+            let value_user_id = user_id.toString();
             let valueFirst: number = first ? Number(first) : 0;
             let value_initial_date_transaction: Date | null = initial_date_transaction ? new Date(initial_date_transaction as string) : null;
             let value_final_date_transaction: Date | null = final_date_transaction ? new Date(final_date_transaction as string) : null;
@@ -15,7 +20,7 @@ export class TransactionController {
             let valueType = type === 'true' ? 'R' : type === 'false' ? 'D' : null;
             let valueSort = sort === 'false' ? false : true;
 
-            const transactions: PrismaTransaction[] = await Transaction.findAll(valueFirst, value_initial_date_transaction, value_final_date_transaction, valueTags, valueType, valueSort);
+            const transactions: PrismaTransaction[] = await Transaction.findAll(value_user_id, valueFirst, value_initial_date_transaction, value_final_date_transaction, valueTags, valueType, valueSort);
             res.json(transactions);
         } catch (error) {
             res.status(500).json({ error: `Internal Server Error: ${error}` });

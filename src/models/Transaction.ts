@@ -3,10 +3,14 @@ import { prisma } from "../lib/prisma"
 
 export class Transaction {
 
-    public static async findAll(first: number, initial_date_transaction: Date | null, final_date_transaction: Date | null, tags: string[] | null, type: string | null, sort: boolean): Promise<PrismaTransaction[] | []> {
+    public static async findAll(user_id: string, first: number, initial_date_transaction: Date | null, final_date_transaction: Date | null, tags: string[] | null, type: string | null, sort: boolean): Promise<PrismaTransaction[] | []> {
         console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
 
         let filter: Prisma.TransactionWhereInput = {};
+
+        filter.user_id = {
+            equals: user_id
+        };
 
         if (initial_date_transaction && final_date_transaction) {
             filter.date_transaction = {

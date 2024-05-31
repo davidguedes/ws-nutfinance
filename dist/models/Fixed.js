@@ -3,9 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Fixed = void 0;
 const prisma_1 = require("../lib/prisma");
 class Fixed {
-    static async findAll(first, rows, description, day_inclusion, tags, status, type, sort) {
+    static async findAll(user_id, first, rows, description, day_inclusion, tags, status, type, sort) {
         console.log('O first: ', first, ' description: ', description, ' initial_date_transaction: ', day_inclusion, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
         let filter = { status };
+        filter.user_id = {
+            equals: user_id
+        };
         if (description) {
             filter.description = {
                 contains: description

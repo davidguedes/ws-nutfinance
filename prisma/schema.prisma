@@ -29,13 +29,15 @@ model Transaction {
   user_id           String
   closing           Closing? @relation(fields: [closing_id], references: [id])
   closing_id        String?
+  fixed             Fixed?   @relation(fields: [fixed_id], references: [id])
+  fixed_id          String?
 }
 
 model User {
   id           String        @id @default(uuid())
   name         String
   email        String        @unique
-  password     String        @unique
+  password     String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   closingDate  Int           @default(1)
@@ -46,17 +48,18 @@ model User {
 }
 
 model Fixed {
-  id            String   @id @default(uuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id            String        @id @default(uuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   value         Float
   type          String
   day_inclusion Int
   description   String
   tags          String[]
-  status        Boolean  @default(true)
-  user          User     @relation(fields: [user_id], references: [id])
+  status        Boolean       @default(true)
+  user          User          @relation(fields: [user_id], references: [id])
   user_id       String
+  Transaction   Transaction[]
 }
 
 model Closing {

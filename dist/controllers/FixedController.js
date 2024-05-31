@@ -5,8 +5,11 @@ const Fixed_1 = require("../models/Fixed");
 class FixedController {
     async getAll(req, res) {
         try {
-            let { first, rows, description, day_inclusion, tags, status, type, sort } = req.query;
-            console.log('req.query: ', req.query);
+            let { user_id, first, rows, description, day_inclusion, tags, status, type, sort } = req.query;
+            if (!user_id) {
+                throw new Error('Operação inválida! Sem dados de usuário.');
+            }
+            let value_user_id = user_id.toString();
             let valueFirst = first ? Number(first) : 0;
             let valueRows = rows ? Number(rows) : 0;
             let value_description = description ? description : null;
@@ -15,7 +18,7 @@ class FixedController {
             let valueStatus = status === 'false' ? false : true;
             let valueType = type === 'true' ? 'R' : type === 'false' ? 'D' : null;
             let valueSort = sort === 'false' ? false : true;
-            const data = await Fixed_1.Fixed.findAll(valueFirst, valueRows, value_description, value_day_inclusion, valueTags, valueStatus, valueType, valueSort);
+            const data = await Fixed_1.Fixed.findAll(value_user_id, valueFirst, valueRows, value_description, value_day_inclusion, valueTags, valueStatus, valueType, valueSort);
             res.json({ totalRecords: data.totalRecords, records: data.records });
         }
         catch (error) {

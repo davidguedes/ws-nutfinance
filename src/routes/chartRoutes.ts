@@ -1,5 +1,5 @@
 import express from 'express';
-import chartController from '../controllers/ChartController';
+import chartController from '../controllers/ChartnutController';
 const router = express.Router();
 
 router.get('/fixed', chartController.getFixed);
