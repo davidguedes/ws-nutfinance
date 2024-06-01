@@ -37,18 +37,38 @@ class TransactionController {
     async create(req, res) {
         try {
             console.log('[00]', req.body);
-            const { value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
+            const { value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
             const newTransaction = await Transaction_1.Transaction.create({
                 value,
                 type,
-                recurrence,
-                number_recurrence,
-                date_transaction,
+                isInstallment,
+                totalInstallmentNumber,
+                installmentNumber: isInstallment ? 1 : null,
+                date_transaction: new Date(date_transaction),
                 description,
                 tags,
                 user_id: user_id
             });
+            if (isInstallment && totalInstallmentNumber && totalInstallmentNumber > 1) {
+                for (let i = 1; i < totalInstallmentNumber; i++) {
+                    // Calcula a data da próxima parcela
+                    const installmentDate = new Date(date_transaction);
+                    installmentDate.setMonth(installmentDate.getMonth() + i);
+                    await Transaction_1.Transaction.create({
+                        value,
+                        type,
+                        isInstallment,
+                        totalInstallmentNumber,
+                        installmentNumber: i + 1,
+                        date_transaction: installmentDate,
+                        description,
+                        tags,
+                        user_id: user_id,
+                        parentTransactionId: newTransaction.id
+                    });
+                }
+            }
             // Retornar a transação criada como resposta
             res.status(201).json(newTransaction);
         }
@@ -59,16 +79,15 @@ class TransactionController {
         }
     }
     async update(req, res) {
-        const user_id = req.params.id;
         try {
-            const { id, value, type, recurrence, number_recurrence, date_transaction, description, tags, user_id } = req.body.data;
+            const { id, value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
             const updatedTransaction = await Transaction_1.Transaction.update({
                 id,
                 value,
                 type,
-                recurrence,
-                number_recurrence,
+                isInstallment,
+                totalInstallmentNumber,
                 date_transaction,
                 description,
                 tags,

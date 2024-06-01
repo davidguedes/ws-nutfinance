@@ -15,22 +15,26 @@ datasource db {
 }
 
 model Transaction {
-  id                String   @id @default(uuid())
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  value             Float
-  type              String
-  recurrence        Boolean
-  number_recurrence Int
-  date_transaction  DateTime
-  description       String
-  tags              String[]
-  user              User     @relation(fields: [user_id], references: [id])
-  user_id           String
-  closing           Closing? @relation(fields: [closing_id], references: [id])
-  closing_id        String?
-  fixed             Fixed?   @relation(fields: [fixed_id], references: [id])
-  fixed_id          String?
+  id                     String        @id @default(uuid())
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  value                  String
+  type                   String
+  isInstallment          Boolean       @default(false)
+  totalInstallmentNumber Int?
+  installmentNumber      Int?
+  date_transaction       DateTime
+  description            String
+  tags                   String[]
+  user                   User          @relation(fields: [user_id], references: [id])
+  user_id                String
+  closing                Closing?      @relation(fields: [closing_id], references: [id])
+  closing_id             String?
+  fixed                  Fixed?        @relation(fields: [fixed_id], references: [id])
+  fixed_id               String?
+  parentTransaction      Transaction?  @relation("ParentChild", fields: [parentTransactionId], references: [id])
+  parentTransactionId    String?
+  childTransactions      Transaction[] @relation("ParentChild")
 }
 
 model User {

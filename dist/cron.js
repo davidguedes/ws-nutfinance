@@ -20,8 +20,8 @@ async function processFixedEntries() {
             data: {
                 value: entry.value,
                 type: entry.type,
-                recurrence: false,
-                number_recurrence: 0,
+                isInstallment: false,
+                totalInstallmentNumber: 0,
                 date_transaction: today,
                 description: entry.description,
                 tags: entry.tags,

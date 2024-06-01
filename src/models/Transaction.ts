@@ -1,5 +1,7 @@
+
 import { Prisma, Transaction as PrismaTransaction } from '@prisma/client';
-import { prisma } from "../lib/prisma"
+import { prisma } from "../lib/prisma";
+import { encrypt, decrypt } from '../utils/cryptoUtils'; // Importa as funções de criptografia
 
 export class Transaction {
 
@@ -32,7 +34,7 @@ export class Transaction {
                 hasSome: tags
             }
         }
-    
+
         if (type) {
             filter.type = {
                 equals: type
@@ -51,7 +53,10 @@ export class Transaction {
                 where: filter
             });
 
-            return transactions;
+            return transactions.map(tx => ({
+                ...tx,
+                value: decrypt(tx.value)// Descriptografa o valor
+            }));
         } catch (err) {
             console.error('Erro ao buscar transações: ', err);
             return [];
@@ -62,6 +67,8 @@ export class Transaction {
         try {
             const transaction = await prisma.transaction.findUnique({ where: { id } });
             if (!transaction) return null;
+
+            transaction.value = decrypt(transaction.value); // Descriptografa o valor
             return new Transaction(transaction);
         } catch (err) {
             console.error('Erro ao buscar transação por ID: ', err);
@@ -72,24 +79,30 @@ export class Transaction {
     public static async create(data: {
         value: number;
         type: string;
-        recurrence: boolean;
-        number_recurrence: number;
+        isInstallment: boolean;
+        totalInstallmentNumber: number;
+        installmentNumber: number | null;
         date_transaction: Date;
         description: string;
         tags: string[];
         user_id: string;
+        parentTransactionId?: string | null;
     }): Promise<Transaction> {
         try {
+            const encryptedValue = encrypt(data.value.toString());
+
             const newTransaction = await prisma.transaction.create({
                 data: {
-                    value: data.value,
+                    value: encryptedValue, // Salva o valor encriptado
                     type: data.type,
-                    recurrence: data.recurrence,
-                    number_recurrence: data.number_recurrence,
+                    isInstallment: data.isInstallment,
+                    totalInstallmentNumber: data.totalInstallmentNumber,
+                    installmentNumber: data.installmentNumber,
                     date_transaction: data.date_transaction,
                     description: data.description,
                     tags: data.tags,
                     user_id: data.user_id,
+                    parentTransactionId: data.parentTransactionId
                 }
             });
 
@@ -104,8 +117,8 @@ export class Transaction {
         id: string;
         value: number;
         type: string;
-        recurrence: boolean;
-        number_recurrence: number;
+        isInstallment: boolean;
+        totalInstallmentNumber: number;
         date_transaction: Date;
         description: string;
         tags: string[];
@@ -114,13 +127,15 @@ export class Transaction {
         try {
             console.log('update ', data);
 
+            const encryptedValue = encrypt(data.value.toString());
+
             const updatedTransaction = await prisma.transaction.update({
                 where: { id: data.id },
                 data: {
-                    value: data.value,
+                    value: encryptedValue, // Salva o valor encriptado
                     type: data.type,
-                    recurrence: data.recurrence,
-                    number_recurrence: data.number_recurrence,
+                    isInstallment: data.isInstallment,
+                    totalInstallmentNumber: data.totalInstallmentNumber,
                     date_transaction: data.date_transaction,
                     description: data.description,
                     tags: { set: data.tags },
@@ -156,8 +171,8 @@ export class Transaction {
     public updatedAt: Date;
     public value: number;
     public type: string;
-    public recurrence: boolean;
-    public number_recurrence: number;
+    public isInstallment: boolean;
+    public totalInstallmentNumber?: number | null;
     public date_transaction: Date;
     public description: string;
     public tags: string[];
@@ -168,10 +183,10 @@ export class Transaction {
         this.id = prismaTransaction.id;
         this.createdAt = prismaTransaction.createdAt;
         this.updatedAt = prismaTransaction.updatedAt;
-        this.value = prismaTransaction.value;
+        this.value = parseFloat(decrypt(prismaTransaction.value)); // Descriptografa o valor
         this.type = prismaTransaction.type;
-        this.recurrence = prismaTransaction.recurrence;
-        this.number_recurrence = prismaTransaction.number_recurrence;
+        this.isInstallment = prismaTransaction.isInstallment;
+        this.totalInstallmentNumber = prismaTransaction.totalInstallmentNumber;
         this.date_transaction = prismaTransaction.date_transaction;
         this.description = prismaTransaction.description;
         this.tags = prismaTransaction.tags;

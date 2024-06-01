@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transaction = void 0;
 const prisma_1 = require("../lib/prisma");
+const cryptoUtils_1 = require("../utils/cryptoUtils"); // Importa as funções de criptografia
 class Transaction {
     static async findAll(user_id, first, initial_date_transaction, final_date_transaction, tags, type, sort) {
         console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
@@ -45,7 +46,10 @@ class Transaction {
                 },
                 where: filter
             });
-            return transactions;
+            return transactions.map(tx => ({
+                ...tx,
+                value: (0, cryptoUtils_1.decrypt)(tx.value) // Descriptografa o valor
+            }));
         }
         catch (err) {
             console.error('Erro ao buscar transações: ', err);
@@ -57,6 +61,7 @@ class Transaction {
             const transaction = await prisma_1.prisma.transaction.findUnique({ where: { id } });
             if (!transaction)
                 return null;
+            transaction.value = (0, cryptoUtils_1.decrypt)(transaction.value); // Descriptografa o valor
             return new Transaction(transaction);
         }
         catch (err) {
@@ -66,16 +71,19 @@ class Transaction {
     }
     static async create(data) {
         try {
+            const encryptedValue = (0, cryptoUtils_1.encrypt)(data.value.toString());
             const newTransaction = await prisma_1.prisma.transaction.create({
                 data: {
-                    value: data.value,
+                    value: encryptedValue, // Salva o valor encriptado
                     type: data.type,
-                    recurrence: data.recurrence,
-                    number_recurrence: data.number_recurrence,
+                    isInstallment: data.isInstallment,
+                    totalInstallmentNumber: data.totalInstallmentNumber,
+                    installmentNumber: data.installmentNumber,
                     date_transaction: data.date_transaction,
                     description: data.description,
                     tags: data.tags,
                     user_id: data.user_id,
+                    parentTransactionId: data.parentTransactionId
                 }
             });
             return new Transaction(newTransaction);
@@ -88,13 +96,14 @@ class Transaction {
     static async update(data) {
         try {
             console.log('update ', data);
+            const encryptedValue = (0, cryptoUtils_1.encrypt)(data.value.toString());
             const updatedTransaction = await prisma_1.prisma.transaction.update({
                 where: { id: data.id },
                 data: {
-                    value: data.value,
+                    value: encryptedValue, // Salva o valor encriptado
                     type: data.type,
-                    recurrence: data.recurrence,
-                    number_recurrence: data.number_recurrence,
+                    isInstallment: data.isInstallment,
+                    totalInstallmentNumber: data.totalInstallmentNumber,
                     date_transaction: data.date_transaction,
                     description: data.description,
                     tags: { set: data.tags },
@@ -127,8 +136,8 @@ class Transaction {
     updatedAt;
     value;
     type;
-    recurrence;
-    number_recurrence;
+    isInstallment;
+    totalInstallmentNumber;
     date_transaction;
     description;
     tags;
@@ -138,10 +147,10 @@ class Transaction {
         this.id = prismaTransaction.id;
         this.createdAt = prismaTransaction.createdAt;
         this.updatedAt = prismaTransaction.updatedAt;
-        this.value = prismaTransaction.value;
+        this.value = parseFloat((0, cryptoUtils_1.decrypt)(prismaTransaction.value)); // Descriptografa o valor
         this.type = prismaTransaction.type;
-        this.recurrence = prismaTransaction.recurrence;
-        this.number_recurrence = prismaTransaction.number_recurrence;
+        this.isInstallment = prismaTransaction.isInstallment;
+        this.totalInstallmentNumber = prismaTransaction.totalInstallmentNumber;
         this.date_transaction = prismaTransaction.date_transaction;
         this.description = prismaTransaction.description;
         this.tags = prismaTransaction.tags;

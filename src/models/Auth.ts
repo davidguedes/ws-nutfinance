@@ -89,7 +89,7 @@ export class Auth {
         console.log('filter: ', filter);
  
         try {
-            const profit = await prisma.transaction.groupBy({
+            /*const profit = await prisma.transaction.groupBy({
                 by: ['user_id'],
                 _sum: {
                     value: true,
@@ -100,7 +100,8 @@ export class Auth {
             console.log('profit: ', profit);
 
             if (!profit || profit.length === 0 || !profit[0]._sum.value) return 0;
-            return profit[0]._sum.value;
+            return profit[0]._sum.value;*/
+            return 0;
         } catch (err) {
             console.error('Error in getProfit: ', err);
             return 0;
@@ -129,7 +130,7 @@ export class Auth {
          console.log('filter: ', filter);
  
         try {
-            const profit = await prisma.transaction.groupBy({
+            /*const profit = await prisma.transaction.groupBy({
                 by: ['user_id'],
                 _sum: {
                     value: true,
@@ -140,7 +141,8 @@ export class Auth {
             console.log('profit: ', profit);
 
             if (!profit || profit.length === 0) return [0];
-            return profit.map(p => p._sum.value);
+            return profit.map(p => p._sum.value);*/
+            return [0, 0 ,0];
         } catch (err) {
             console.error('Error in getComparative: ', err);
             return [0];

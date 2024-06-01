@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_cron_1 = __importDefault(require("node-cron"));
 const client_1 = require("@prisma/client");
+const cryptoUtils_1 = require("./utils/cryptoUtils");
 const prisma = new client_1.PrismaClient();
 async function processFixedEntries() {
     const today = new Date();
@@ -18,10 +19,9 @@ async function processFixedEntries() {
         console.log('Entry: ', entry);
         await prisma.transaction.create({
             data: {
-                value: entry.value,
+                value: (0, cryptoUtils_1.encrypt)(entry.value.toString()),
                 type: entry.type,
-                recurrence: false,
-                number_recurrence: 0,
+                isInstallment: false,
                 date_transaction: today,
                 description: entry.description,
                 tags: entry.tags,
@@ -31,8 +31,8 @@ async function processFixedEntries() {
         });
     }
 }
-//cron.schedule('1 0 * * *', async () => {
-node_cron_1.default.schedule('1 * * * * *', async () => {
-    console.log('Running cron job at 00:01');
+// Cron job para rodar todos os dias à 00:01
+node_cron_1.default.schedule('1 0 * * *', async () => {
+    console.log('Running daily cron job at 00:01');
     await processFixedEntries();
 });
