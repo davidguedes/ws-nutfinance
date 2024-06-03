@@ -7,7 +7,7 @@ export class TransactionController {
         try {
             let { user_id, first, initial_date_transaction, final_date_transaction, tags, type, sort } = req.query;
             const now = new Date();
-            const endOfMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+            const endOfMonth =  new Date(now.getFullYear(), now.getMonth() + 1, 0);
   
             console.log('req.query: ', req.query);
             if(!user_id) {

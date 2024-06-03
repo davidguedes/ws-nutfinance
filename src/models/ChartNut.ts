@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from "../lib/prisma";
+import { encrypt, decrypt } from '../utils/cryptoUtils'; // Importa as funções de criptografia
 
 export class Chartnut {
 
@@ -60,19 +61,23 @@ export class Chartnut {
         console.log('filter: ', filter);
  
         try {
-            /*const profit = await prisma.transaction.groupBy({
-                by: ['user_id'],
-                _sum: {
-                    value: true,
-                },
-                where: filter
+            const transactions = await prisma.transaction.findMany({
+                where: filter,
+                select: {
+                    value: true
+                }
             });
-
-            console.log('profit: ', profit);
-
-            if (!profit || profit.length === 0 || !profit[0]._sum.value) return 0;
-            return profit[0]._sum.value;*/
-            return 0;
+    
+            console.log('transactions: ', transactions);
+    
+            // Desencriptar e converter valores para número
+            const profit = transactions.reduce((sum, transaction) => {
+                const decryptedValue = decrypt(transaction.value); // Assumindo que você tem uma função desencriptar
+                const numericValue = parseFloat(decryptedValue);
+                return sum + numericValue;
+            }, 0);
+    
+            return profit;
         } catch (err) {
             console.error('Error in getProfit: ', err);
             return 0;
@@ -101,19 +106,23 @@ export class Chartnut {
          console.log('filter: ', filter);
  
         try {
-            /*const profit = await prisma.transaction.groupBy({
-                by: ['user_id'],
-                _sum: {
-                    value: true,
-                },
-                where: filter
+            const transactions = await prisma.transaction.findMany({
+                where: filter,
+                select: {
+                    value: true
+                }
             });
-
-            console.log('profit: ', profit);
-
-            if (!profit || profit.length === 0) return [0];
-            return profit.map(p => p._sum.value);*/
-            return [0, 0]
+    
+            console.log('transactions: ', transactions);
+    
+            // Desencriptar e converter valores para número
+            const comparative = transactions.map(transaction => {
+                const decryptedValue = decrypt(transaction.value); // Assumindo que você tem uma função desencriptar
+                const numericValue = parseFloat(decryptedValue);
+                return numericValue;
+            });
+    
+            return comparative;
         } catch (err) {
             console.error('Error in getComparative: ', err);
             return [0];

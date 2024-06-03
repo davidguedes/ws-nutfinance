@@ -6,6 +6,8 @@ class TransactionController {
     async getAll(req, res) {
         try {
             let { user_id, first, initial_date_transaction, final_date_transaction, tags, type, sort } = req.query;
+            const now = new Date();
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
             console.log('req.query: ', req.query);
             if (!user_id) {
                 throw new Error('Operação inválida! Sem dados de usuário.');
@@ -13,7 +15,7 @@ class TransactionController {
             let value_user_id = user_id.toString();
             let valueFirst = first ? Number(first) : 0;
             let value_initial_date_transaction = initial_date_transaction ? new Date(initial_date_transaction) : null;
-            let value_final_date_transaction = final_date_transaction ? new Date(final_date_transaction) : null;
+            let value_final_date_transaction = final_date_transaction ? new Date(final_date_transaction) : endOfMonth;
             let valueTags = tags ? tags.split(',') : null;
             let valueType = type === 'true' ? 'R' : type === 'false' ? 'D' : null;
             let valueSort = sort === 'false' ? false : true;
