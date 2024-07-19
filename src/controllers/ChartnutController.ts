@@ -10,7 +10,7 @@ export class ChartController {
             console.log('req.query. ', req.body)
             const user_id = req.query.user_id?.toString();
             if (!user_id) {
-                res.status(400).json({ error: 'user_id is required' });
+                res.status(400).json({ message: 'user_id is required' });
                 return;
             }
 
@@ -18,7 +18,7 @@ export class ChartController {
             res.json(fixed);
         } catch (error) {
             console.error('Error in getFixed:', error);
-            res.status(500).json({ error: `Internal Server Error: ${error}` });
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }
 
@@ -26,7 +26,7 @@ export class ChartController {
         try {
             const user_id = req.query.user_id?.toString();
             if (!user_id) {
-                res.status(400).json({ error: 'user_id is required' });
+                res.status(400).json({ message: 'user_id is required' });
                 return;
             }
 
@@ -34,7 +34,7 @@ export class ChartController {
             res.json(profit);
         } catch (error) {
             console.error('Error in getProfit:', error);
-            res.status(500).json({ error: `Internal Server Error: ${error}` });
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }
 
@@ -42,7 +42,7 @@ export class ChartController {
         try {
             const user_id = req.query.user_id?.toString();
             if (!user_id) {
-                res.status(400).json({ error: 'user_id is required' });
+                res.status(400).json({ message: 'user_id is required' });
                 return;
             }
 
@@ -50,7 +50,7 @@ export class ChartController {
             res.json(profit);
         } catch (error) {
             console.error('Error in getComparative:', error);
-            res.status(500).json({ error: `Internal Server Error: ${error}` });
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }
 }

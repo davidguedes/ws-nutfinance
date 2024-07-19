@@ -25,7 +25,7 @@ export class TransactionController {
             const transactions: PrismaTransaction[] = await Transaction.findAll(value_user_id, valueFirst, value_initial_date_transaction, value_final_date_transaction, valueTags, valueType, valueSort);
             res.json(transactions);
         } catch (error) {
-            res.status(500).json({ error: `Internal Server Error: ${error}` });
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }
 
@@ -35,7 +35,7 @@ export class TransactionController {
             const transaction = await Transaction.findById(transactionId);
             res.json(transaction);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
     public async create(req: Request, res: Response): Promise<void> {
@@ -82,7 +82,7 @@ export class TransactionController {
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao criar transação:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 
@@ -108,7 +108,7 @@ export class TransactionController {
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao atualizar transação:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 
@@ -128,7 +128,7 @@ export class TransactionController {
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao deletar transação:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 }

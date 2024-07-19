@@ -9,7 +9,7 @@ export class UserController {
             const users = await User.findAll();
             res.json(users);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 
@@ -22,14 +22,14 @@ export class UserController {
             const user = await User.findById(user_id);
             res.json(user);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 
     // POST /api/users
     public async create(req: Request, res: Response): Promise<void> {
         try {
-            const { name, email, password} = req.body;
+            const { name, email, password, closing_date} = req.body;
 
             // Validar os dados recebidos da requisição (opcional)
 
@@ -37,15 +37,20 @@ export class UserController {
             const newUser = await User.create({
                 name,
                 email,
-                password
+                password,
+                closing_date
             });
 
             // Retornar o usuário criada como resposta
             res.status(201).json(newUser);
-        } catch (error) {
-            // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao criar usuário:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+        } catch (error: any) {
+            if (error.message === 'Email already in use') {
+                res.status(400).json({ message: 'Email já está em uso' });
+            } else {
+                // Se houver um erro, retornar uma resposta de erro
+                console.error('Erro ao criar usuário:', error);
+                res.status(500).json({ message: 'Erro interno do servidor' });
+            }
         }
     }
 

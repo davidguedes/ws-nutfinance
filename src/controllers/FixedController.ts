@@ -23,7 +23,7 @@ export class FixedController {
             const data = await Fixed.findAll(value_user_id, valueFirst, valueRows, value_description, value_day_inclusion, valueTags, valueStatus, valueType, valueSort);
             res.json({totalRecords: data.totalRecords, records: data.records});
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
 
@@ -33,7 +33,7 @@ export class FixedController {
             const transaction = await Fixed.findById(transactionId);
             res.json(transaction);
         } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
     public async create(req: Request, res: Response): Promise<void> {
@@ -55,7 +55,7 @@ export class FixedController {
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao criar fixa:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 
@@ -80,7 +80,7 @@ export class FixedController {
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao atualizar fixa:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 
@@ -100,7 +100,7 @@ export class FixedController {
         } catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao deletar fixa:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 }

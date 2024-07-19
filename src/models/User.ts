@@ -29,6 +29,7 @@ export class User {
         name: string;
         email: string;
         password: string;
+        closing_date: number;
     }): Promise<User> {
         try {
             const newUser = await prisma.user.create({
@@ -36,13 +37,17 @@ export class User {
                     name: data.name,
                     email: data.email,
                     password: data.password,
+                    closingDate: data.closing_date
                 },
             });
 
             return new User(newUser);
-        } catch (error) {
+        } catch (error: any) {
+            if (error.code === 'P2002' && error.meta?.target.includes('email')) {
+                throw new Error('Email already in use');
+            }
             console.error('Failed to create user: ', error);
-            throw new Error(`Failed to create user: ${error}`);
+            throw new Error(`Failed to create user: ${error.message}`);
         }
     }
 
