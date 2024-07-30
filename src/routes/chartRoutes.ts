@@ -8,5 +8,6 @@ router.get('/profit', chartController.getProfit);
 
 router.get('/comparative', chartController.getComparative);
 
+router.get('/spendingCategory', chartController.getSpendingCategory);
 
 export default router;

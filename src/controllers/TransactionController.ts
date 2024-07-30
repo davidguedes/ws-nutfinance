@@ -41,7 +41,7 @@ export class TransactionController {
     public async create(req: Request, res: Response): Promise<void> {
         try {
             console.log('[00]', req.body);
-            const { value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id } = req.body.data;
+            const { value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id, category } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
             const newTransaction = await Transaction.create({
@@ -53,7 +53,8 @@ export class TransactionController {
                 date_transaction: new Date(date_transaction),
                 description,
                 tags,
-                user_id: user_id
+                user_id: user_id,
+                category
             });
 
             if (isInstallment && totalInstallmentNumber && totalInstallmentNumber > 1) {
@@ -72,7 +73,8 @@ export class TransactionController {
                         description,
                         tags,
                         user_id: user_id,
-                        parentTransactionId: newTransaction.id
+                        parentTransactionId: newTransaction.id,
+                        category
                     });
                 }
             }
@@ -88,7 +90,7 @@ export class TransactionController {
 
     public async update(req: Request, res: Response): Promise<void> {
         try {
-            const { id, value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id } = req.body.data;
+            const { id, value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id, category } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
             const updatedTransaction = await Transaction.update({
@@ -100,7 +102,8 @@ export class TransactionController {
                 date_transaction,
                 description,
                 tags,
-                user_id: user_id
+                user_id: user_id,
+                category
             });
 
             // Retornar a transação criada como resposta

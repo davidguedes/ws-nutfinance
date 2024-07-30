@@ -11,7 +11,7 @@ class UserController {
             res.json(users);
         }
         catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
     // GET /api/users/:id
@@ -24,27 +24,33 @@ class UserController {
             res.json(user);
         }
         catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
     // POST /api/users
     async create(req, res) {
         try {
-            const { name, email, password } = req.body;
+            const { name, email, password, closing_date } = req.body;
             // Validar os dados recebidos da requisição (opcional)
             // Criar a transação utilizando o método estático create do modelo
             const newUser = await User_1.User.create({
                 name,
                 email,
-                password
+                password,
+                closing_date
             });
             // Retornar o usuário criada como resposta
             res.status(201).json(newUser);
         }
         catch (error) {
-            // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao criar usuário:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            if (error.message === 'Email already in use') {
+                res.status(400).json({ message: 'Email já está em uso' });
+            }
+            else {
+                // Se houver um erro, retornar uma resposta de erro
+                console.error('Erro ao criar usuário:', error);
+                res.status(500).json({ message: 'Erro interno do servidor' });
+            }
         }
     }
     // PUT /api/users/:id

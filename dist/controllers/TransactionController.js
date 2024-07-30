@@ -23,7 +23,7 @@ class TransactionController {
             res.json(transactions);
         }
         catch (error) {
-            res.status(500).json({ error: `Internal Server Error: ${error}` });
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }
     async getById(req, res) {
@@ -33,13 +33,13 @@ class TransactionController {
             res.json(transaction);
         }
         catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
+            res.status(500).json({ message: 'Internal Server Error' });
         }
     }
     async create(req, res) {
         try {
             console.log('[00]', req.body);
-            const { value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id } = req.body.data;
+            const { value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id, category } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
             const newTransaction = await Transaction_1.Transaction.create({
                 value,
@@ -50,7 +50,8 @@ class TransactionController {
                 date_transaction: new Date(date_transaction),
                 description,
                 tags,
-                user_id: user_id
+                user_id: user_id,
+                category
             });
             if (isInstallment && totalInstallmentNumber && totalInstallmentNumber > 1) {
                 for (let i = 1; i < totalInstallmentNumber; i++) {
@@ -67,7 +68,8 @@ class TransactionController {
                         description,
                         tags,
                         user_id: user_id,
-                        parentTransactionId: newTransaction.id
+                        parentTransactionId: newTransaction.id,
+                        category
                     });
                 }
             }
@@ -77,12 +79,12 @@ class TransactionController {
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao criar transação:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
     async update(req, res) {
         try {
-            const { id, value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id } = req.body.data;
+            const { id, value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id, category } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
             const updatedTransaction = await Transaction_1.Transaction.update({
                 id,
@@ -93,7 +95,8 @@ class TransactionController {
                 date_transaction,
                 description,
                 tags,
-                user_id: user_id
+                user_id: user_id,
+                category
             });
             // Retornar a transação criada como resposta
             res.status(200).json(updatedTransaction);
@@ -101,7 +104,7 @@ class TransactionController {
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao atualizar transação:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
     async delete(req, res) {
@@ -119,7 +122,7 @@ class TransactionController {
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
             console.error('Erro ao deletar transação:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 }

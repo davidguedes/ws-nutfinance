@@ -35,6 +35,8 @@ model Transaction {
   parentTransaction      Transaction?  @relation("ParentChild", fields: [parentTransactionId], references: [id])
   parentTransactionId    String?
   childTransactions      Transaction[] @relation("ParentChild")
+  category               Category?     @relation(fields: [category_id], references: [id])
+  category_id            String?
 }
 
 model User {
@@ -49,6 +51,8 @@ model User {
   transactions Transaction[]
   fixed        Fixed[]
   Closing      Closing[]
+  budgets      Budget[]
+  categories   Category[] // Relação com categorias
 }
 
 model Fixed {
@@ -76,4 +80,39 @@ model Closing {
   user         User          @relation(fields: [user_id], references: [id])
   user_id      String
   transactions Transaction[]
+}
+
+model Category {
+  id               String           @id @default(uuid())
+  name             String           @unique
+  description      String?
+  user             User             @relation(fields: [user_id], references: [id])
+  user_id          String // Referência ao usuário que criou a categoria
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  transactions     Transaction[]
+  budgetCategories BudgetCategory[]
+
+  @@unique([name, user_id]) // Garante que o nome da categoria seja único por usuário
+}
+
+model Budget {
+  id         String           @id @default(uuid())
+  user       User             @relation(fields: [user_id], references: [id])
+  user_id    String
+  month      Int // Mês (1 a 12)
+  year       Int // Ano (ex: 2024)
+  total      Float
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  categories BudgetCategory[]
+}
+
+model BudgetCategory {
+  id          String   @id @default(uuid())
+  budget      Budget   @relation(fields: [budget_id], references: [id])
+  budget_id   String
+  category    Category @relation(fields: [category_id], references: [id])
+  category_id String
+  amount      Float
 }

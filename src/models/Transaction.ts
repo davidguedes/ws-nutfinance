@@ -41,8 +41,6 @@ export class Transaction {
             };
         }
 
-        console.log('filter: ', filter);
-
         try {
             const transactions = await prisma.transaction.findMany({
                 skip: first,
@@ -87,6 +85,7 @@ export class Transaction {
         tags: string[];
         user_id: string;
         parentTransactionId?: string | null;
+        category: string;
     }): Promise<Transaction> {
         try {
             const encryptedValue = encrypt(data.value.toString());
@@ -102,7 +101,8 @@ export class Transaction {
                     description: data.description,
                     tags: data.tags,
                     user_id: data.user_id,
-                    parentTransactionId: data.parentTransactionId
+                    parentTransactionId: data.parentTransactionId,
+                    category_id: data.category
                 }
             });
 
@@ -123,10 +123,9 @@ export class Transaction {
         description: string;
         tags: string[];
         user_id: string;
+        category: string;
     }): Promise<Transaction> {
         try {
-            console.log('update ', data);
-
             const encryptedValue = encrypt(data.value.toString());
 
             const updatedTransaction = await prisma.transaction.update({
@@ -140,7 +139,8 @@ export class Transaction {
                     description: data.description,
                     tags: { set: data.tags },
                     user_id: data.user_id,
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
+                    category_id:  data.category
                 }
             });
 

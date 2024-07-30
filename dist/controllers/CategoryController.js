@@ -1,25 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FixedController = void 0;
-const Fixed_1 = require("../models/Fixed");
-class FixedController {
+exports.CategoryController = void 0;
+const Category_1 = require("../models/Category");
+class CategoryController {
     async getAll(req, res) {
         try {
-            let { user_id, first, rows, description, day_inclusion, tags, status, type, sort } = req.query;
+            let { user_id, first, rows, name } = req.query;
             if (!user_id) {
                 throw new Error('Operação inválida! Sem dados de usuário.');
             }
             let value_user_id = user_id.toString();
             let valueFirst = first ? Number(first) : 0;
             let valueRows = rows ? Number(rows) : 0;
-            let value_description = description ? description : null;
-            let value_day_inclusion = day_inclusion ? Number(day_inclusion) : null;
-            let valueTags = tags ? tags.split(',') : null;
-            let valueStatus = status === 'false' ? false : true;
-            let valueType = type === 'true' ? 'R' : type === 'false' ? 'D' : null;
-            let valueSort = sort === 'false' ? false : true;
-            const data = await Fixed_1.Fixed.findAll(value_user_id, valueFirst, valueRows, value_description, value_day_inclusion, valueTags, valueStatus, valueType, valueSort);
+            let value_name = name ? name : null;
+            const data = await Category_1.Category.findAll(value_user_id, valueFirst, valueRows, value_name);
             res.json({ totalRecords: data.totalRecords, records: data.records });
+        }
+        catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    }
+    async getByUser(req, res) {
+        try {
+            let { user_id } = req.query;
+            if (!user_id) {
+                throw new Error('Operação inválida! Sem dados de usuário.');
+            }
+            let value_user_id = user_id.toString();
+            const data = await Category_1.Category.findByUser(value_user_id);
+            res.json(data.records);
         }
         catch (error) {
             res.status(500).json({ message: 'Internal Server Error' });
@@ -28,7 +37,7 @@ class FixedController {
     async getById(req, res) {
         const transactionId = req.params.id;
         try {
-            const transaction = await Fixed_1.Fixed.findById(transactionId);
+            const transaction = await Category_1.Category.findById(transactionId);
             res.json(transaction);
         }
         catch (error) {
@@ -38,44 +47,38 @@ class FixedController {
     async create(req, res) {
         try {
             console.log('[00]', req.body);
-            const { value, type, day_inclusion, description, tags, user_id } = req.body.data;
+            const { name, description, user_id } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
-            const newFixed = await Fixed_1.Fixed.create({
-                value,
-                type,
-                day_inclusion,
+            const newCategory = await Category_1.Category.create({
+                name,
                 description,
-                tags,
                 user_id: user_id
             });
-            res.status(201).json(newFixed);
+            res.status(201).json(newCategory);
         }
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao criar fixa:', error);
+            console.error('Erro ao criar categoria:', error);
             res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
     async update(req, res) {
         const user_id = req.params.id;
         try {
-            const { id, value, type, day_inclusion, description, tags, user_id } = req.body.data;
+            const { id, name, description, tags, user_id } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
-            const updatedFixed = await Fixed_1.Fixed.update({
+            const updatedCategory = await Category_1.Category.update({
                 id,
-                value,
-                type,
-                day_inclusion,
+                name,
                 description,
-                tags,
                 user_id: user_id
             });
             // Retornar a transação criada como resposta
-            res.status(200).json(updatedFixed);
+            res.status(200).json(updatedCategory);
         }
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao atualizar fixa:', error);
+            console.error('Erro ao atualizar categoria:', error);
             res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
@@ -84,7 +87,7 @@ class FixedController {
             console.log('[00]', req.params);
             const { id } = req.params;
             // Criar a transação utilizando o método estático create do modelo
-            await Fixed_1.Fixed.delete({
+            await Category_1.Category.delete({
                 id
             });
             //console.log('deletedTransaction: ', deletedTransaction);
@@ -93,10 +96,10 @@ class FixedController {
         }
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao deletar fixa:', error);
+            console.error('Erro ao deletar categoria:', error);
             res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
 }
-exports.FixedController = FixedController;
-exports.default = new FixedController();
+exports.CategoryController = CategoryController;
+exports.default = new CategoryController();

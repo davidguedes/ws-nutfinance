@@ -36,7 +36,6 @@ class Transaction {
                 equals: type
             };
         }
-        console.log('filter: ', filter);
         try {
             const transactions = await prisma_1.prisma.transaction.findMany({
                 skip: first,
@@ -83,7 +82,8 @@ class Transaction {
                     description: data.description,
                     tags: data.tags,
                     user_id: data.user_id,
-                    parentTransactionId: data.parentTransactionId
+                    parentTransactionId: data.parentTransactionId,
+                    category_id: data.category
                 }
             });
             return new Transaction(newTransaction);
@@ -95,7 +95,6 @@ class Transaction {
     }
     static async update(data) {
         try {
-            console.log('update ', data);
             const encryptedValue = (0, cryptoUtils_1.encrypt)(data.value.toString());
             const updatedTransaction = await prisma_1.prisma.transaction.update({
                 where: { id: data.id },
@@ -108,7 +107,8 @@ class Transaction {
                     description: data.description,
                     tags: { set: data.tags },
                     user_id: data.user_id,
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
+                    category_id: data.category
                 }
             });
             return new Transaction(updatedTransaction);

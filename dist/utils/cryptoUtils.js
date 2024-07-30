@@ -7,7 +7,8 @@ exports.decrypt = exports.encrypt = void 0;
 // cryptoUtils.js
 const crypto_1 = __importDefault(require("crypto"));
 const algorithm = 'aes-256-ctr';
-const secretKey = process.env.KEY_SECRET || 'eKSikNlVxQwfqsdyPvDiCBWScxjMYN6t';
+const secretKey = //process.env.KEY_SECRET || 
+ 'eKSikNlVxQwfqsdyPvDiCBWScxjMYN6t';
 const encrypt = (text) => {
     const iv = crypto_1.default.randomBytes(16);
     const cipher = crypto_1.default.createCipheriv(algorithm, secretKey, iv);
