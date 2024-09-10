@@ -5,9 +5,6 @@ const Chartnut_1 = require("../models/Chartnut");
 class ChartController {
     async getFixed(req, res) {
         try {
-            console.log('req.query. ', req.query);
-            console.log('req.query. ', req.params);
-            console.log('req.query. ', req.body);
             const user_id = req.query.user_id?.toString();
             if (!user_id) {
                 res.status(400).json({ message: 'user_id is required' });

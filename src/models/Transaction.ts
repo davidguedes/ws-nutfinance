@@ -6,7 +6,7 @@ import { encrypt, decrypt } from '../utils/cryptoUtils'; // Importa as funções
 export class Transaction {
 
     public static async findAll(user_id: string, first: number, initial_date_transaction: Date | null, final_date_transaction: Date | null, tags: string[] | null, type: string | null, sort: boolean): Promise<PrismaTransaction[] | []> {
-        console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
+        //console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
 
         let filter: Prisma.TransactionWhereInput = {};
 
@@ -102,7 +102,7 @@ export class Transaction {
                     tags: data.tags,
                     user_id: data.user_id,
                     parentTransactionId: data.parentTransactionId,
-                    category_id: data.category
+                    budgetCategory_id: data.category
                 }
             });
 
@@ -140,7 +140,7 @@ export class Transaction {
                     tags: { set: data.tags },
                     user_id: data.user_id,
                     updatedAt: new Date(),
-                    category_id:  data.category
+                    budgetCategory_id: data.category
                 }
             });
 

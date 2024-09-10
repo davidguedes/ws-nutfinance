@@ -10,7 +10,6 @@ class AuthController {
         try {
             let { token, user } = await Auth_1.Auth.login(email, password);
             const fixed = await Chartnut_1.Chartnut.getFixed('null');
-            console.log('O fixed ', fixed);
             res.json({ user, token });
         }
         catch (error) {

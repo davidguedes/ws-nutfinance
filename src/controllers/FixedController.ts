@@ -39,7 +39,7 @@ export class FixedController {
     public async create(req: Request, res: Response): Promise<void> {
         try {
             console.log('[00]', req.body);
-            const { value, type, day_inclusion, description, tags, user_id } = req.body.data;
+            const { value, type, day_inclusion, description, tags, user_id, category } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
             const newFixed = await Fixed.create({
@@ -48,7 +48,8 @@ export class FixedController {
                 day_inclusion,
                 description,
                 tags,
-                user_id: user_id
+                user_id: user_id,
+                category
             });
 
             res.status(201).json(newFixed);
@@ -62,7 +63,7 @@ export class FixedController {
     public async update(req: Request, res: Response): Promise<void> {
         const user_id = req.params.id;
         try {
-            const { id, value, type, day_inclusion, description, tags, user_id } = req.body.data;
+            const { id, value, type, day_inclusion, description, tags, user_id, category } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
             const updatedFixed = await Fixed.update({
@@ -72,7 +73,8 @@ export class FixedController {
                 day_inclusion,
                 description,
                 tags,
-                user_id: user_id
+                user_id: user_id,
+                category
             });
 
             // Retornar a transação criada como resposta
@@ -86,7 +88,6 @@ export class FixedController {
 
     public async delete(req: Request, res: Response): Promise<void> {
         try {
-            console.log('[00]', req.params);
             const { id } = req.params;
 
             // Criar a transação utilizando o método estático create do modelo

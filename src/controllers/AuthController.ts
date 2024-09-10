@@ -11,7 +11,6 @@ export class AuthController {
             let { token, user} = await Auth.login(email, password);
             
             const fixed = await Chartnut.getFixed('null');
-            console.log('O fixed ', fixed);
 
             res.json({user, token});
         } catch (error) {

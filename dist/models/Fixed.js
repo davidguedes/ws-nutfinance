@@ -4,7 +4,7 @@ exports.Fixed = void 0;
 const prisma_1 = require("../lib/prisma");
 class Fixed {
     static async findAll(user_id, first, rows, description, day_inclusion, tags, status, type, sort) {
-        console.log('O first: ', first, ' description: ', description, ' initial_date_transaction: ', day_inclusion, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
+        //console.log('O first: ', first, ' description: ', description, ' initial_date_transaction: ', day_inclusion, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
         let filter = { status };
         filter.user_id = {
             equals: user_id
@@ -29,7 +29,6 @@ class Fixed {
                 equals: type
             };
         }
-        console.log('filter: ', filter);
         try {
             // Utilizando uma transação para realizar ambas as consultas
             const [totalRecords, records] = await prisma_1.prisma.$transaction([
@@ -73,7 +72,8 @@ class Fixed {
                     day_inclusion: data.day_inclusion,
                     description: data.description,
                     tags: data.tags,
-                    user_id: data.user_id
+                    user_id: data.user_id,
+                    budgetCategory_id: data.category
                 },
             });
             return new Fixed(newFixed);
@@ -85,7 +85,6 @@ class Fixed {
     }
     static async update(data) {
         try {
-            console.log('update ', data);
             const updatedFixed = await prisma_1.prisma.fixed.update({
                 where: { id: data.id },
                 data: {
@@ -95,7 +94,8 @@ class Fixed {
                     description: data.description,
                     tags: { set: data.tags },
                     user_id: data.user_id,
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
+                    budgetCategory_id: data.category
                 },
             });
             return new Fixed(updatedFixed);

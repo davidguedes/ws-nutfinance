@@ -11,7 +11,6 @@ class Auth {
     static async login(email, password) {
         try {
             const user = await prisma_1.prisma.user.findUnique({ where: { email } });
-            console.log('O user: ', user);
             if (!user) {
                 throw new Error(`Invalid email or password`);
             }
@@ -42,12 +41,10 @@ class Auth {
             gte: firstDayOfMonth,
             lte: lastDayOfMonth
         };
-        console.log('filter: ', filter);
         try {
             const fixed = await prisma_1.prisma.transaction.count({
                 where: filter
             });
-            console.log('fixed: ', fixed);
             return fixed;
         }
         catch (err) {
@@ -70,7 +67,6 @@ class Auth {
             gte: firstDayOfMonth,
             lte: lastDayOfMonth
         };
-        console.log('filter: ', filter);
         try {
             /*const profit = await prisma.transaction.groupBy({
                 by: ['user_id'],
@@ -105,7 +101,6 @@ class Auth {
             gte: firstDayOfMonth,
             lte: lastDayOfMonth
         };
-        console.log('filter: ', filter);
         try {
             /*const profit = await prisma.transaction.groupBy({
                 by: ['user_id'],

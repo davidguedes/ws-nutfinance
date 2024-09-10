@@ -46,7 +46,6 @@ class CategoryController {
     }
     async create(req, res) {
         try {
-            console.log('[00]', req.body);
             const { name, description, user_id } = req.body.data;
             // Criar a transação utilizando o método estático create do modelo
             const newCategory = await Category_1.Category.create({
@@ -84,7 +83,6 @@ class CategoryController {
     }
     async delete(req, res) {
         try {
-            console.log('[00]', req.params);
             const { id } = req.params;
             // Criar a transação utilizando o método estático create do modelo
             await Category_1.Category.delete({

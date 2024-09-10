@@ -9,7 +9,6 @@ export class TransactionController {
             const now = new Date();
             const endOfMonth =  new Date(now.getFullYear(), now.getMonth() + 1, 0);
   
-            console.log('req.query: ', req.query);
             if(!user_id) {
                 throw new Error('Operação inválida! Sem dados de usuário.');
             }
@@ -40,7 +39,6 @@ export class TransactionController {
     }
     public async create(req: Request, res: Response): Promise<void> {
         try {
-            console.log('[00]', req.body);
             const { value, type, isInstallment, totalInstallmentNumber, date_transaction, description, tags, user_id, category } = req.body.data;
 
             // Criar a transação utilizando o método estático create do modelo
@@ -117,7 +115,6 @@ export class TransactionController {
 
     public async delete(req: Request, res: Response): Promise<void> {
         try {
-            console.log('[00]', req.params);
             const { id } = req.params;
 
             // Criar a transação utilizando o método estático create do modelo

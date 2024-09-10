@@ -11,7 +11,6 @@ export class Auth {
         try {
             const user = await prisma.user.findUnique({ where: { email } });
         
-            console.log('O user: ', user);
             if (!user) {
                 throw new Error(`Invalid email or password`);
             }
@@ -50,15 +49,12 @@ export class Auth {
             gte: firstDayOfMonth,
             lte: lastDayOfMonth
         };
- 
-         console.log('filter: ', filter);
- 
+  
          try {
             const fixed = await prisma.transaction.count({
                 where: filter
             });
 
-            console.log('fixed: ', fixed);
             return fixed;
         } catch (err) {
             console.error('Error in getFixed: ', err);
@@ -85,9 +81,7 @@ export class Auth {
             gte: firstDayOfMonth,
             lte: lastDayOfMonth
         };
- 
-        console.log('filter: ', filter);
- 
+  
         try {
             /*const profit = await prisma.transaction.groupBy({
                 by: ['user_id'],
@@ -126,8 +120,6 @@ export class Auth {
             gte: firstDayOfMonth,
             lte: lastDayOfMonth
         };
- 
-         console.log('filter: ', filter);
  
         try {
             /*const profit = await prisma.transaction.groupBy({

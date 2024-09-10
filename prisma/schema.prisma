@@ -15,28 +15,28 @@ datasource db {
 }
 
 model Transaction {
-  id                     String        @id @default(uuid())
-  createdAt              DateTime      @default(now())
-  updatedAt              DateTime      @updatedAt
+  id                     String          @id @default(uuid())
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
   value                  String
   type                   String
-  isInstallment          Boolean       @default(false)
+  isInstallment          Boolean         @default(false)
   totalInstallmentNumber Int?
   installmentNumber      Int?
   date_transaction       DateTime
   description            String
   tags                   String[]
-  user                   User          @relation(fields: [user_id], references: [id])
+  user                   User            @relation(fields: [user_id], references: [id])
   user_id                String
-  closing                Closing?      @relation(fields: [closing_id], references: [id])
+  closing                Closing?        @relation(fields: [closing_id], references: [id])
   closing_id             String?
-  fixed                  Fixed?        @relation(fields: [fixed_id], references: [id])
+  fixed                  Fixed?          @relation(fields: [fixed_id], references: [id])
   fixed_id               String?
-  parentTransaction      Transaction?  @relation("ParentChild", fields: [parentTransactionId], references: [id])
+  parentTransaction      Transaction?    @relation("ParentChild", fields: [parentTransactionId], references: [id])
   parentTransactionId    String?
-  childTransactions      Transaction[] @relation("ParentChild")
-  category               Category?     @relation(fields: [category_id], references: [id])
-  category_id            String?
+  childTransactions      Transaction[]   @relation("ParentChild")
+  budgetCategory         BudgetCategory? @relation(fields: [budgetCategory_id], references: [id]) // Relacionamento com BudgetCategory
+  budgetCategory_id      String?
 }
 
 model User {
@@ -52,22 +52,23 @@ model User {
   fixed        Fixed[]
   Closing      Closing[]
   budgets      Budget[]
-  categories   Category[] // Relação com categorias
 }
 
 model Fixed {
-  id            String        @id @default(uuid())
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  value         Float
-  type          String
-  day_inclusion Int
-  description   String
-  tags          String[]
-  status        Boolean       @default(true)
-  user          User          @relation(fields: [user_id], references: [id])
-  user_id       String
-  Transaction   Transaction[]
+  id                String         @id @default(uuid())
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  value             Float
+  type              String
+  day_inclusion     Int
+  description       String
+  tags              String[]
+  status            Boolean        @default(true)
+  user              User           @relation(fields: [user_id], references: [id])
+  user_id           String
+  Transaction       Transaction[]
+  budgetCategory    BudgetCategory @relation(fields: [budgetCategory_id], references: [id])
+  budgetCategory_id String
 }
 
 model Closing {
@@ -82,37 +83,27 @@ model Closing {
   transactions Transaction[]
 }
 
-model Category {
-  id               String           @id @default(uuid())
-  name             String           @unique
-  description      String?
-  user             User             @relation(fields: [user_id], references: [id])
-  user_id          String // Referência ao usuário que criou a categoria
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  transactions     Transaction[]
-  budgetCategories BudgetCategory[]
-
-  @@unique([name, user_id]) // Garante que o nome da categoria seja único por usuário
-}
-
 model Budget {
-  id         String           @id @default(uuid())
-  user       User             @relation(fields: [user_id], references: [id])
-  user_id    String
-  month      Int // Mês (1 a 12)
-  year       Int // Ano (ex: 2024)
-  total      Float
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
-  categories BudgetCategory[]
+  id           String           @id @default(uuid())
+  user         User             @relation(fields: [user_id], references: [id])
+  user_id      String
+  totalIncome  Float // Total de receitas planejadas
+  totalExpense Float // Total de despesas planejadas
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  categories   BudgetCategory[] // Relação com categorias de receitas e despesas
 }
 
 model BudgetCategory {
-  id          String   @id @default(uuid())
-  budget      Budget   @relation(fields: [budget_id], references: [id])
-  budget_id   String
-  category    Category @relation(fields: [category_id], references: [id])
-  category_id String
-  amount      Float
+  id           String        @id @default(uuid())
+  budget       Budget        @relation(fields: [budget_id], references: [id])
+  budget_id    String
+  type         String // "income" ou "expense" para identificar se é receita ou despesa
+  category     String // Nome da categoria
+  amount       Float
+  color        String // Cor em Hex para representar a categoria
+  transactions Transaction[] // Relação inversa com Transaction
+  fixed        Fixed[] // Relação inversa com Fixed
+
+  @@unique([budget_id, category]) // Garantia de que cada categoria seja única dentro de um orçamento específico
 }

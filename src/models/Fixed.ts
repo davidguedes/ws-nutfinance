@@ -4,7 +4,7 @@ import { prisma } from "../lib/prisma"
 export class Fixed {
 
     public static async findAll(user_id: string, first: number, rows: number, description: string | null, day_inclusion: number | null, tags: string[] | null, status: boolean, type: string | null, sort: boolean): Promise<{ totalRecords: number, records: Fixed[] }> {
-        console.log('O first: ', first, ' description: ', description, ' initial_date_transaction: ', day_inclusion, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
+        //console.log('O first: ', first, ' description: ', description, ' initial_date_transaction: ', day_inclusion, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
 
         let filter: Prisma.FixedWhereInput =  { status };
 
@@ -35,8 +35,6 @@ export class Fixed {
                 equals: type
             };
         }
-
-        console.log('filter: ', filter);
 
         try {
             // Utilizando uma transação para realizar ambas as consultas
@@ -79,6 +77,7 @@ export class Fixed {
         description: string;
         tags: string[];
         user_id: string;
+        category: string;
     }): Promise<Fixed> {
         try {
             const newFixed = await prisma.fixed.create({
@@ -88,7 +87,8 @@ export class Fixed {
                     day_inclusion: data.day_inclusion,
                     description: data.description,
                     tags: data.tags,
-                    user_id: data.user_id
+                    user_id: data.user_id,
+                    budgetCategory_id: data.category
                 },
             });
 
@@ -107,10 +107,9 @@ export class Fixed {
         description: string;
         tags: string[];
         user_id: string;
+        category: string;
     }): Promise<Fixed> {
         try {
-            console.log('update ', data);
-
             const updatedFixed = await prisma.fixed.update({
                 where: { id: data.id },
                 data: {
@@ -120,7 +119,8 @@ export class Fixed {
                     description: data.description,
                     tags: { set: data.tags },
                     user_id: data.user_id,
-                    updatedAt: new Date()
+                    updatedAt: new Date(),
+                    budgetCategory_id: data.category
                 },
             });
 

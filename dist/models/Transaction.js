@@ -5,7 +5,7 @@ const prisma_1 = require("../lib/prisma");
 const cryptoUtils_1 = require("../utils/cryptoUtils"); // Importa as funções de criptografia
 class Transaction {
     static async findAll(user_id, first, initial_date_transaction, final_date_transaction, tags, type, sort) {
-        console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
+        //console.log('O first: ', first, ' initial_date_transaction: ', initial_date_transaction, ' final_date_transaction: ', final_date_transaction, ' tags: ', tags, ' type: ', type, ' sort: ', sort);
         let filter = {};
         filter.user_id = {
             equals: user_id
@@ -83,7 +83,7 @@ class Transaction {
                     tags: data.tags,
                     user_id: data.user_id,
                     parentTransactionId: data.parentTransactionId,
-                    category_id: data.category
+                    budgetCategory_id: data.category
                 }
             });
             return new Transaction(newTransaction);
@@ -108,7 +108,7 @@ class Transaction {
                     tags: { set: data.tags },
                     user_id: data.user_id,
                     updatedAt: new Date(),
-                    category_id: data.category
+                    budgetCategory_id: data.category
                 }
             });
             return new Transaction(updatedTransaction);
