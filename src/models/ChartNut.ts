@@ -91,6 +91,49 @@ export class Chartnut {
         }
     }
 
+    public static async getExpense(user_id: string): Promise<number> {
+        let filter: Prisma.TransactionWhereInput = {
+           user_id: user_id,
+           type: 'D'
+       };
+
+       // Obter a data atual
+        const today = new Date();
+
+        // Primeiro dia do mês atual
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        // Último dia do mês atual
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+       filter.date_transaction = {
+           gte: firstDayOfMonth,
+           lte: lastDayOfMonth
+       };
+
+       try {
+           const transactions = await prisma.transaction.findMany({
+               where: filter,
+               select: {
+                   value: true
+               }
+           });
+
+   
+           // Desencriptar e converter valores para número
+           const profit = transactions.reduce((sum, transaction) => {
+               const decryptedValue = decrypt(transaction.value); // Assumindo que você tem uma função desencriptar
+               const numericValue = parseFloat(decryptedValue);
+               return sum + numericValue;
+           }, 0);
+   
+           return profit;
+       } catch (err) {
+           console.error('Error in getExpense: ', err);
+           return 0;
+       }
+   }
+
     public static async getComparative2(user_id: string): Promise<any[]> {
         let filter: Prisma.TransactionWhereInput = {
             user_id: user_id

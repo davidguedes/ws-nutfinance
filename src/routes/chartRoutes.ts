@@ -6,6 +6,8 @@ router.get('/fixed', chartController.getFixed);
 
 router.get('/profit', chartController.getProfit);
 
+router.get('/expense', chartController.getExpense);
+
 router.get('/comparative', chartController.getComparative);
 
 router.get('/spendingCategory', chartController.getSpendingCategory);

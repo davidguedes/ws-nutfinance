@@ -34,6 +34,22 @@ export class ChartController {
         }
     }
 
+    public async getExpense(req: Request, res: Response): Promise<void> {
+        try {
+            const user_id = req.query.user_id?.toString();
+            if (!user_id) {
+                res.status(400).json({ message: 'user_id is required' });
+                return;
+            }
+
+            const profit = await Chartnut.getExpense(user_id);
+            res.json(profit);
+        } catch (error) {
+            console.error('Error in getProfit:', error);
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
+        }
+    }
+
     public async getComparative(req: Request, res: Response): Promise<void> {
         try {
             const user_id = req.query.user_id?.toString();
