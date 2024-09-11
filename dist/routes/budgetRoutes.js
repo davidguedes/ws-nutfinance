@@ -11,3 +11,4 @@ router.put('/', BudgetController_1.default.update);
 router.get('/:user_id', BudgetController_1.default.getAll);
 router.get('/getCategory/:user_id', BudgetController_1.default.getCategory);
 exports.default = router;
+//# sourceMappingURL=budgetRoutes.js.map

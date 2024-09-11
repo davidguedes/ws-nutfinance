@@ -9,3 +9,4 @@ const router = express_1.default.Router();
 // Definir rotas para posts
 router.post('/login', AuthController_1.default.login);
 exports.default = router;
+//# sourceMappingURL=authRoutes.js.map

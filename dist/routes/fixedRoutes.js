@@ -12,3 +12,4 @@ router.post('/', FixedController_1.default.create);
 router.put('/', FixedController_1.default.update);
 router.delete('/:id', FixedController_1.default.delete);
 exports.default = router;
+//# sourceMappingURL=fixedRoutes.js.map

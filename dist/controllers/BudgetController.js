@@ -54,3 +54,4 @@ class BudgetController {
 }
 exports.BudgetController = BudgetController;
 exports.default = new BudgetController();
+//# sourceMappingURL=BudgetController.js.map

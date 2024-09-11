@@ -101,3 +101,4 @@ class FixedController {
 }
 exports.FixedController = FixedController;
 exports.default = new FixedController();
+//# sourceMappingURL=FixedController.js.map

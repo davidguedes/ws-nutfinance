@@ -66,3 +66,4 @@ class ChartController {
 }
 exports.ChartController = ChartController;
 exports.default = new ChartController();
+//# sourceMappingURL=ChartnutController.js.map

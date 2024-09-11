@@ -114,3 +114,4 @@ node_cron_1.default.schedule('1 0 1-28 * *', async () => {
     console.log('Running restricted cron job at 00:01 between the 1st and 28th of the month');
     await processClosings();
 });
+//# sourceMappingURL=closingCron.js.map

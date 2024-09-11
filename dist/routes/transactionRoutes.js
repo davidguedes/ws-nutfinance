@@ -12,3 +12,4 @@ router.post('/', TransactionController_1.default.create);
 router.put('/', TransactionController_1.default.update);
 router.delete('/:id', TransactionController_1.default.delete);
 exports.default = router;
+//# sourceMappingURL=transactionRoutes.js.map

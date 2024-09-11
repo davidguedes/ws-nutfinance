@@ -18,3 +18,4 @@ router.use('/fixed', fixedRoutes_1.default);
 router.use('/transaction', transactionRoutes_1.default);
 router.use('/user', userRoutes_1.default);
 exports.default = router;
+//# sourceMappingURL=index.js.map

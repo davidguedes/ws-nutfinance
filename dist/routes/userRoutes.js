@@ -12,3 +12,4 @@ router.post('/', UserController_1.default.create);
 router.put('/', UserController_1.default.update);
 router.delete('/', UserController_1.default.delete);
 exports.default = router;
+//# sourceMappingURL=userRoutes.js.map

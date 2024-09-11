@@ -11,3 +11,4 @@ router.get('/profit', ChartnutController_1.default.getProfit);
 router.get('/comparative', ChartnutController_1.default.getComparative);
 router.get('/spendingCategory', ChartnutController_1.default.getSpendingCategory);
 exports.default = router;
+//# sourceMappingURL=chartRoutes.js.map

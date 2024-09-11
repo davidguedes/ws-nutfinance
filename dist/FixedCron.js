@@ -36,3 +36,4 @@ node_cron_1.default.schedule('1 0 * * *', async () => {
     console.log('Running daily cron job at 00:01');
     await processFixedEntries();
 });
+//# sourceMappingURL=FixedCron.js.map

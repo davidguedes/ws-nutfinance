@@ -140,3 +140,4 @@ class Fixed {
     }
 }
 exports.Fixed = Fixed;
+//# sourceMappingURL=Fixed.js.map

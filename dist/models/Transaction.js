@@ -159,3 +159,4 @@ class Transaction {
     }
 }
 exports.Transaction = Transaction;
+//# sourceMappingURL=Transaction.js.map
