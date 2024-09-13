@@ -53,8 +53,8 @@ async function processFixedEntries() {
     }
 }
 // Cron job para rodar todos os dias à 00:01
-const job = module.exports = node_cron_1.default.schedule('*/1 * * * *', processFixedEntries, {
-    //const job = module.exports = cron.schedule('1 0 * * *', processFixedEntries, {
+//const job = module.exports = cron.schedule('*/1 * * * *', processFixedEntries, {
+const job = module.exports = node_cron_1.default.schedule('1 0 * * *', processFixedEntries, {
     scheduled: false,
     timezone: 'America/Sao_Paulo'
 });

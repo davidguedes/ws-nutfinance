@@ -129,8 +129,8 @@ async function processClosings() {
     } */
 }
 // Cron job para rodar diariamente às 00:01 do dia 1 ao dia 28
-const job = node_cron_1.default.schedule('*/1 * * * *', processClosings, {
-    //const job = cron.schedule('1 0 1-28 * *', processClosings, {
+//const job = cron.schedule('*/1 * * * *', processClosings, {
+const job = node_cron_1.default.schedule('1 0 1-28 * *', processClosings, {
     scheduled: false,
     timezone: 'America/Sao_Paulo'
 });
