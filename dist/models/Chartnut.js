@@ -1,9 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chartnut = void 0;
 const prisma_1 = require("../lib/prisma");
 const cryptoUtils_1 = require("../utils/cryptoUtils"); // Importa as funções de criptografia
-const date_fns_1 = require("date-fns");
+const format_1 = __importDefault(require("date-fns/format"));
+const subMonths_1 = __importDefault(require("date-fns/subMonths"));
+const addDays_1 = __importDefault(require("date-fns/addDays"));
 const locale_1 = require("date-fns/locale");
 class Chartnut {
     static async getFixed(user_id) {
@@ -147,7 +152,7 @@ class Chartnut {
             if (!user)
                 throw new Error(`User not found`);
             const today = new Date();
-            const sixMonthsAgo = (0, date_fns_1.subMonths)(today, 6);
+            const sixMonthsAgo = (0, subMonths_1.default)(today, 6);
             // Ajusta a data inicial para considerar o dia de fechamento
             const adjustedStartDate = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), user.closingDate);
             if (adjustedStartDate > today) {
@@ -168,9 +173,9 @@ class Chartnut {
                 if (transactionDate < startOfPeriod) {
                     startOfPeriod.setMonth(startOfPeriod.getMonth() - 1);
                 }
-                const endOfPeriod = (0, date_fns_1.addDays)(startOfPeriod, 30);
-                const periodKey = (0, date_fns_1.format)(startOfPeriod, 'ddMMyyyy', { locale: locale_1.ptBR });
-                const periodTitle = `${(0, date_fns_1.format)(startOfPeriod, 'dd/MM/yyyy', { locale: locale_1.ptBR })} - ${(0, date_fns_1.format)(endOfPeriod, 'dd/MM/yyyy', { locale: locale_1.ptBR })}`;
+                const endOfPeriod = (0, addDays_1.default)(startOfPeriod, 30);
+                const periodKey = (0, format_1.default)(startOfPeriod, 'ddMMyyyy', { locale: locale_1.ptBR });
+                const periodTitle = `${(0, format_1.default)(startOfPeriod, 'dd/MM/yyyy', { locale: locale_1.ptBR })} - ${(0, format_1.default)(endOfPeriod, 'dd/MM/yyyy', { locale: locale_1.ptBR })}`;
                 if (!acc[periodKey]) {
                     acc[periodKey] = { D: 0, R: 0, title: periodTitle };
                 }

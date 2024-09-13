@@ -1,8 +1,8 @@
 import { User as PrismaUser } from '@prisma/client';
 import { prisma } from "../lib/prisma"
 import { Prisma } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export class Auth {
     // Métodos para manipular usuários
