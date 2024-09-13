@@ -1,12 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chartnut = void 0;
 const prisma_1 = require("../lib/prisma");
 const cryptoUtils_1 = require("../utils/cryptoUtils"); // Importa as funções de criptografia
-const format_1 = require("date-fns/format");
-const subMonths_1 = require("date-fns/subMonths");
-const addDays_1 = require("date-fns/addDays");
-const locale_1 = require("date-fns/locale");
+const moment_1 = __importDefault(require("moment"));
 class Chartnut {
     static async getFixed(user_id) {
         try {
@@ -149,7 +149,8 @@ class Chartnut {
             if (!user)
                 throw new Error(`User not found`);
             const today = new Date();
-            const sixMonthsAgo = (0, subMonths_1.subMonths)(today, 6);
+            //const sixMonthsAgo = subMonths(today, 6);
+            const sixMonthsAgo = (0, moment_1.default)(today).subtract(6, 'months').toDate();
             // Ajusta a data inicial para considerar o dia de fechamento
             const adjustedStartDate = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), user.closingDate);
             if (adjustedStartDate > today) {
@@ -170,9 +171,12 @@ class Chartnut {
                 if (transactionDate < startOfPeriod) {
                     startOfPeriod.setMonth(startOfPeriod.getMonth() - 1);
                 }
-                const endOfPeriod = (0, addDays_1.addDays)(startOfPeriod, 30);
-                const periodKey = (0, format_1.format)(startOfPeriod, 'ddMMyyyy', { locale: locale_1.ptBR });
-                const periodTitle = `${(0, format_1.format)(startOfPeriod, 'dd/MM/yyyy', { locale: locale_1.ptBR })} - ${(0, format_1.format)(endOfPeriod, 'dd/MM/yyyy', { locale: locale_1.ptBR })}`;
+                //const endOfPeriod = addDays(startOfPeriod, 30);
+                const endOfPeriod = (0, moment_1.default)(startOfPeriod).add(30, 'days').toDate();
+                const periodKey = (0, moment_1.default)(startOfPeriod).format('DDMMYYYY');
+                //const periodKey = format(startOfPeriod, 'ddMMyyyy', { locale: ptBR });
+                const periodTitle = `${(0, moment_1.default)(startOfPeriod).format('DD/MM/YYYY')} - ${(0, moment_1.default)(endOfPeriod).format('DD/MM/YYYY')}`;
+                //const periodTitle = `${format(startOfPeriod, 'dd/MM/yyyy', { locale: ptBR })} - ${format(endOfPeriod, 'dd/MM/yyyy', { locale: ptBR })}`;
                 if (!acc[periodKey]) {
                     acc[periodKey] = { D: 0, R: 0, title: periodTitle };
                 }

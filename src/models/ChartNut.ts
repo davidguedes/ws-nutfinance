@@ -1,10 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { encrypt, decrypt } from "../utils/cryptoUtils"; // Importa as funções de criptografia
-import { format } from "date-fns/format";
-import { subMonths } from "date-fns/subMonths";
-import { addDays } from "date-fns/addDays";
-import { ptBR } from "date-fns/locale";
+import moment from "moment";
 
 interface PieChartData {
     labels: string[];
@@ -176,7 +173,8 @@ export class Chartnut {
                 throw new Error(`User not found`);
 
             const today = new Date();
-            const sixMonthsAgo = subMonths(today, 6);
+            //const sixMonthsAgo = subMonths(today, 6);
+            const sixMonthsAgo = moment(today).subtract(6, 'months').toDate();
 
             // Ajusta a data inicial para considerar o dia de fechamento
             const adjustedStartDate = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), user.closingDate);
@@ -201,10 +199,13 @@ export class Chartnut {
                 if (transactionDate < startOfPeriod) {
                     startOfPeriod.setMonth(startOfPeriod.getMonth() - 1);
                 }
-                const endOfPeriod = addDays(startOfPeriod, 30);
-    
-                const periodKey = format(startOfPeriod, 'ddMMyyyy', { locale: ptBR });
-                const periodTitle = `${format(startOfPeriod, 'dd/MM/yyyy', { locale: ptBR })} - ${format(endOfPeriod, 'dd/MM/yyyy', { locale: ptBR })}`;
+                //const endOfPeriod = addDays(startOfPeriod, 30);
+                const endOfPeriod = moment(startOfPeriod).add(30, 'days').toDate();
+
+                const periodKey = moment(startOfPeriod).format('DDMMYYYY');
+                //const periodKey = format(startOfPeriod, 'ddMMyyyy', { locale: ptBR });
+                const periodTitle = `${moment(startOfPeriod).format('DD/MM/YYYY')} - ${moment(endOfPeriod).format('DD/MM/YYYY')}`;
+                //const periodTitle = `${format(startOfPeriod, 'dd/MM/yyyy', { locale: ptBR })} - ${format(endOfPeriod, 'dd/MM/yyyy', { locale: ptBR })}`;
     
                 if (!acc[periodKey]) {
                     acc[periodKey] = { D: 0, R: 0, title: periodTitle };
