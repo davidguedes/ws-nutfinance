@@ -1,9 +1,8 @@
 import { Prisma } from '@prisma/client';
 import { prisma } from "../lib/prisma";
 import { encrypt, decrypt } from '../utils/cryptoUtils'; // Importa as funções de criptografia
-
-const { subMonths, format, addDays } = require('date-fns');
-const { ptBR } = require("date-fns/locale");
+import { subMonths, format, addDays } from 'date-fns';
+import { ptBR } from "date-fns/locale";
 
 interface PieChartData {
     labels: string[];
