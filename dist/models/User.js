@@ -13,6 +13,9 @@ class User {
             console.error('Failed to find all users: ', error);
             return [];
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
     static async findById(id) {
         try {
@@ -24,6 +27,9 @@ class User {
         catch (error) {
             console.error('Failed to find user by ID: ', error);
             return null;
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     static async create(data) {
@@ -44,6 +50,30 @@ class User {
             }
             console.error('Failed to create user: ', error);
             throw new Error(`Failed to create user: ${error.message}`);
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
+    }
+    static async update(data) {
+        try {
+            let dataUpdate = {
+                name: data.name,
+            };
+            if (data.closing_date)
+                dataUpdate.closingDate = data.closing_date;
+            const updatedUser = await prisma_1.prisma.user.update({
+                where: { id: data.user_id },
+                data: dataUpdate
+            });
+            return new User(updatedUser);
+        }
+        catch (error) {
+            console.error('Failed to update user: ', error);
+            throw new Error(`Failed to update user: ${error}`);
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     // Atributos do modelo

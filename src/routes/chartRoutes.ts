@@ -12,4 +12,6 @@ router.get('/comparative', chartController.getComparative);
 
 router.get('/spendingCategory', chartController.getSpendingCategory);
 
+router.get('/progressOfMonth', chartController.getProgressOfMonth);
+
 export default router;

@@ -50,6 +50,9 @@ class Fixed {
             console.error('Erro ao buscar registros: ', err);
             return { totalRecords: 0, records: [] };
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
     static async findById(id) {
         try {
@@ -61,6 +64,9 @@ class Fixed {
         catch (err) {
             console.error('Erro ao buscar registro por ID: ', err);
             return null;
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     static async create(data) {
@@ -81,6 +87,9 @@ class Fixed {
         catch (error) {
             console.error('Failed to create fixed: ', error);
             throw new Error(`Failed to create fixed: ${error}`);
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     static async update(data) {
@@ -104,6 +113,9 @@ class Fixed {
             console.error('Failed to update fixed: ', error);
             throw new Error(`Failed to update fixed: ${error}`);
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
     static async delete(data) {
         try {
@@ -115,6 +127,9 @@ class Fixed {
         catch (error) {
             console.error('Failed to delete fixed: ', error);
             throw new Error(`Failed to delete fixed: ${error}`);
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     // Atributos do modelo

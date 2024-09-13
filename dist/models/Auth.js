@@ -26,6 +26,26 @@ class Auth {
             console.error(error);
             throw error;
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
+    }
+    static async reset(user_id) {
+        try {
+            await prisma_1.prisma.closing.deleteMany({ where: { user_id } });
+            await prisma_1.prisma.transaction.deleteMany({ where: { user_id } });
+            await prisma_1.prisma.fixed.deleteMany({ where: { user_id } });
+            await prisma_1.prisma.budgetCategory.deleteMany({ where: { user_id } });
+            await prisma_1.prisma.budget.deleteMany({ where: { user_id } });
+            return true;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
     static async getFixed(user_id) {
         let filter = {
@@ -50,6 +70,9 @@ class Auth {
         catch (err) {
             console.error('Error in getFixed: ', err);
             return 0;
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     static async getProfit(user_id) {
@@ -86,6 +109,9 @@ class Auth {
             console.error('Error in getProfit: ', err);
             return 0;
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
     static async getComparative(user_id) {
         let filter = {
@@ -119,6 +145,9 @@ class Auth {
         catch (err) {
             console.error('Error in getComparative: ', err);
             return [0];
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     // Atributos do modelo

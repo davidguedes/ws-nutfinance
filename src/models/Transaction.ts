@@ -58,6 +58,8 @@ export class Transaction {
         } catch (err) {
             console.error('Erro ao buscar transações: ', err);
             return [];
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -71,6 +73,8 @@ export class Transaction {
         } catch (err) {
             console.error('Erro ao buscar transação por ID: ', err);
             return null;
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -110,6 +114,8 @@ export class Transaction {
         } catch (error) {
             console.error('Failed to create transaction: ', error);
             throw new Error(`Failed to create transaction: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -148,6 +154,8 @@ export class Transaction {
         } catch (error) {
             console.error('Failed to update transaction: ', error);
             throw new Error(`Failed to update transaction: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -155,13 +163,20 @@ export class Transaction {
         id: string;
     }): Promise<boolean> {
         try {
-            await prisma.transaction.delete({
-                where: { id: data.id }
+            await prisma.transaction.deleteMany({
+                where: {
+                    OR: [
+                        { id: data.id },
+                        { parentTransactionId: data.id }
+                    ]
+                }
             });
             return true;
         } catch (error) {
             console.error('Failed to delete transaction: ', error);
             throw new Error(`Failed to delete transaction: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
 

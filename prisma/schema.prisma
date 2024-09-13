@@ -40,18 +40,19 @@ model Transaction {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  name         String
-  email        String        @unique
-  password     String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  closingDate  Int           @default(1)
-  status       Boolean       @default(true)
-  transactions Transaction[]
-  fixed        Fixed[]
-  Closing      Closing[]
-  budgets      Budget[]
+  id             String           @id @default(uuid())
+  name           String
+  email          String           @unique
+  password       String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  closingDate    Int              @default(1)
+  status         Boolean          @default(true)
+  transactions   Transaction[]
+  fixed          Fixed[]
+  Closing        Closing[]
+  budgets        Budget[]
+  budgetCategory BudgetCategory[]
 }
 
 model Fixed {
@@ -98,9 +99,12 @@ model BudgetCategory {
   id           String        @id @default(uuid())
   budget       Budget        @relation(fields: [budget_id], references: [id])
   budget_id    String
+  user         User          @relation(fields: [user_id], references: [id])
+  user_id      String
   type         String // "income" ou "expense" para identificar se é receita ou despesa
   category     String // Nome da categoria
   amount       Float
+  default      Boolean
   color        String // Cor em Hex para representar a categoria
   transactions Transaction[] // Relação inversa com Transaction
   fixed        Fixed[] // Relação inversa com Fixed

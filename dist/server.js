@@ -7,8 +7,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const index_1 = __importDefault(require("./routes/index"));
 const cors_1 = __importDefault(require("cors"));
-//import './FixedCron';
-//import './closingCron';
+const CronMananger_1 = __importDefault(require("./jobs/CronMananger"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
@@ -25,5 +24,6 @@ app.get('/', (req, res) => {
 });
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
+    CronMananger_1.default.run(); // Inicia os jobs cron
 });
 //# sourceMappingURL=server.js.map

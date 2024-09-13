@@ -43,84 +43,140 @@ export class Budget {
                 })
             }
 
-             // Atualizar ou inserir incomeCategories
-        const incomeCategoryIds = data.incomeCategories.map(cat => cat.id).filter(id => id !== null);
+            // Atualizar ou inserir incomeCategories
+            const incomeCategoryIds = data.incomeCategories.map(cat => cat.id).filter(id => id !== null);
 
-        // Exclui categorias de renda que não estão no array de atualização
-        await prisma.budgetCategory.deleteMany({
-            where: {
-                budget_id: budget.id,
-                type: 'income',
-                NOT: { id: { in: incomeCategoryIds } }
+            // Passo 1: Buscar o budgetIncomeCategory padrão
+            const defaultIncomeCategory = await prisma.budgetCategory.findFirst({
+                where: {
+                    user_id: data.user_id,
+                    type: 'income',
+                    default: true,
+                }
+            });
+
+            if (!defaultIncomeCategory) {
+                throw new Error('Categoria de ganho padrão não encontrada');
             }
-        });
 
-        for (const cat of data.incomeCategories) {
-            if (cat.id) {
-                // Atualiza categoria existente
-                await prisma.budgetCategory.update({
-                    where: { id: cat.id },
-                    data: {
-                        category: cat.name,
-                        amount: cat.amount,
-                        color: cat.color
+            // Passo 2: Atualizar as transações para usar o budgetIncomeCategory padrão
+            await prisma.transaction.updateMany({
+                where: {
+                    budgetCategory_id: {
+                        in: incomeCategoryIds
                     }
-                });
-            } else {
-                // Cria nova categoria
-                await prisma.budgetCategory.create({
-                    data: {
-                        budget_id: budget.id,
-                        type: cat.type,
-                        category: cat.name,
-                        amount: cat.amount,
-                        color: cat.color
-                    }
-                });
+                },
+                data: {
+                    budgetCategory_id: defaultIncomeCategory.id
+                }
+            });
+
+            // Exclui categorias de renda que não estão no array de atualização
+            await prisma.budgetCategory.deleteMany({
+                where: {
+                    budget_id: budget.id,
+                    type: 'income',
+                    NOT: { id: { in: incomeCategoryIds } }
+                }
+            });
+
+            for (const cat of data.incomeCategories) {
+                if (cat.id) {
+                    // Atualiza categoria existente
+                    await prisma.budgetCategory.update({
+                        where: { id: cat.id },
+                        data: {
+                            category: cat.name,
+                            amount: cat.amount,
+                            color: cat.color
+                        }
+                    });
+                } else {
+                    // Cria nova categoria
+                    await prisma.budgetCategory.create({
+                        data: {
+                            budget_id: budget.id,
+                            type: cat.type,
+                            category: cat.name,
+                            amount: cat.amount,
+                            color: cat.color,
+                            default: false,
+                            user_id: data.user_id,
+                        }
+                    });
+                }
             }
-        }
 
-        // Atualizar ou inserir expenseCategories
-        const expenseCategoryIds = data.expenseCategories.map(cat => cat.id).filter(id => id !== null);
+            // Atualizar ou inserir expenseCategories
+            const expenseCategoryIds = data.expenseCategories.map(cat => cat.id).filter(id => id !== null);
 
-        // Exclui categorias de despesas que não estão no array de atualização
-        await prisma.budgetCategory.deleteMany({
-            where: {
-                budget_id: budget.id,
-                type: 'expense',
-                NOT: { id: { in: expenseCategoryIds } }
+            // Passo 1: Buscar o budgetExpenseCategory padrão
+            const defaultExpenseCategory = await prisma.budgetCategory.findFirst({
+                where: {
+                    user_id: data.user_id,
+                    type: 'expense',
+                    default: true,
+                }
+            });
+            
+            if (!defaultExpenseCategory) {
+                throw new Error('Categoria de gasto padrão não encontrada');
             }
-        });
 
-        for (const cat of data.expenseCategories) {
-            if (cat.id) {
-                // Atualiza categoria existente
-                await prisma.budgetCategory.update({
-                    where: { id: cat.id },
-                    data: {
-                        category: cat.name,
-                        amount: cat.amount,
-                        color: cat.color
+            // Passo 2: Atualizar as transações para usar o budgetExpenseCategory padrão
+            await prisma.transaction.updateMany({
+                where: {
+                    budgetCategory_id: {
+                        in: expenseCategoryIds
                     }
-                });
-            } else {
-                // Cria nova categoria
-                await prisma.budgetCategory.create({
-                    data: {
-                        budget_id: budget.id,
-                        type: cat.type,
-                        category: cat.name,
-                        amount: cat.amount,
-                        color: cat.color
-                    }
-                });
+                },
+                data: {
+                    budgetCategory_id: defaultExpenseCategory.id
+                }
+            });
+
+            // Exclui categorias de despesas que não estão no array de atualização
+            await prisma.budgetCategory.deleteMany({
+                where: {
+                    budget_id: budget.id,
+                    type: 'expense',
+                    NOT: { id: { in: expenseCategoryIds } }
+                }
+            });
+
+            for (const cat of data.expenseCategories) {
+                if (cat.id) {
+                    // Atualiza categoria existente
+                    await prisma.budgetCategory.update({
+                        where: { id: cat.id },
+                        data: {
+                            category: cat.name,
+                            amount: cat.amount,
+                            color: cat.color
+                        }
+                    });
+                } else {
+                    // Cria nova categoria
+                    await prisma.budgetCategory.create({
+                        data: {
+                            budget_id: budget.id,
+                            type: cat.type,
+                            category: cat.name,
+                            amount: cat.amount,
+                            color: cat.color,
+                            default: false,
+                            user_id: data.user_id,
+                        }
+                    });
+                }
             }
-        }
 
-        return budget;
+            return budget;
         } catch (error) {
             console.error('Failed to update budget: ', error);
             throw new Error(`Failed to update budget: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -140,6 +196,8 @@ export class Budget {
         } catch (error) {
             console.error('Failed to update budget: ', error);
             throw new Error(`Failed to update budget: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -160,7 +218,9 @@ export class Budget {
                     type: 'expense',
                     category: 'Gasto básico',
                     amount: 100,
-                    color: '00FF00'
+                    color: '#00FF00',
+                    default: true,
+                    user_id
                 }
             });
 
@@ -170,7 +230,9 @@ export class Budget {
                     type: 'income',
                     category: 'Ganho básico',
                     amount: 100,
-                    color: 'FF0000'
+                    color: '#FF0000',
+                    default: true,
+                    user_id
                 }
             });
 
@@ -185,6 +247,8 @@ export class Budget {
         } catch (error) {
             console.error('Failed to create base budget: ', error);
             throw new Error(`Failed to create base budget: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -204,6 +268,8 @@ export class Budget {
         } catch (error) {
             console.error('Failed to update budget: ', error);
             throw new Error(`Failed to update budget: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
     

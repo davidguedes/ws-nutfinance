@@ -81,6 +81,22 @@ export class ChartController {
             res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }
+
+    public async getProgressOfMonth(req: Request, res: Response): Promise<void> {
+        try {
+            const user_id = req.query.user_id?.toString();
+            if (!user_id) {
+                res.status(400).json({ message: 'user_id is required' });
+                return;
+            }
+
+            const progressOfMonth = await Chartnut.getProgressOfMonth(user_id);
+            res.json(progressOfMonth);
+        } catch (error) {
+            console.error('Error in getProgressOfMonth:', error);
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
+        }
+    }
 }
 
 export default new ChartController();

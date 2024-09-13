@@ -3,24 +3,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chartnut = void 0;
 const prisma_1 = require("../lib/prisma");
 const cryptoUtils_1 = require("../utils/cryptoUtils"); // Importa as funções de criptografia
-const { subMonths, format } = require('date-fns');
+const { subMonths, format, addDays } = require('date-fns');
 const { ptBR } = require("date-fns/locale");
 class Chartnut {
     static async getFixed(user_id) {
-        let filter = {
-            user_id: user_id
-        };
-        // Obter a data atual
-        const today = new Date();
-        // Primeiro dia do mês atual
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        // Último dia do mês atual
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        filter.date_transaction = {
-            gte: firstDayOfMonth,
-            lte: lastDayOfMonth
-        };
         try {
+            const user = await prisma_1.prisma.user.findUnique({ where: { id: user_id } });
+            if (!user)
+                throw new Error(`User not found`);
+            const now = new Date();
+            const closingDate = user.closingDate;
+            // Determinar o início e o fim do período atual
+            let startOfPeriod, endOfPeriod;
+            if (now.getDate() > closingDate) {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+            }
+            else {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+            }
+            console.log('startOfPeriod: ', startOfPeriod);
+            console.log('endOfPeriod: ', endOfPeriod);
+            const filter = {
+                user_id: user_id,
+                date_transaction: {
+                    gte: startOfPeriod,
+                    lte: endOfPeriod
+                }
+            };
             const fixed = await prisma_1.prisma.transaction.count({
                 where: filter
             });
@@ -30,23 +41,36 @@ class Chartnut {
             console.error('Error in getFixed: ', err);
             return 0;
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
     static async getProfit(user_id) {
-        let filter = {
-            user_id: user_id,
-            type: 'R'
-        };
-        // Obter a data atual
-        const today = new Date();
-        // Primeiro dia do mês atual
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        // Último dia do mês atual
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        filter.date_transaction = {
-            gte: firstDayOfMonth,
-            lte: lastDayOfMonth
-        };
         try {
+            const user = await prisma_1.prisma.user.findUnique({ where: { id: user_id } });
+            if (!user)
+                throw new Error(`User not found`);
+            // Obter a data atual
+            const now = new Date();
+            const closingDate = user.closingDate;
+            // Determinar o início e o fim do período atual
+            let startOfPeriod, endOfPeriod;
+            if (now.getDate() > closingDate) {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+            }
+            else {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+            }
+            let filter = {
+                user_id: user_id,
+                type: 'R',
+                date_transaction: {
+                    gte: startOfPeriod,
+                    lte: endOfPeriod
+                }
+            };
             const transactions = await prisma_1.prisma.transaction.findMany({
                 where: filter,
                 select: {
@@ -65,22 +89,36 @@ class Chartnut {
             console.error('Error in getProfit: ', err);
             return 0;
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
-    static async getComparative2(user_id) {
-        let filter = {
-            user_id: user_id
-        };
-        // Obter a data atual
-        const today = new Date();
-        // Primeiro dia do mês atual
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        // Último dia do mês atual
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        filter.date_transaction = {
-            gte: firstDayOfMonth,
-            lte: lastDayOfMonth
-        };
+    static async getExpense(user_id) {
         try {
+            const user = await prisma_1.prisma.user.findUnique({ where: { id: user_id } });
+            if (!user)
+                throw new Error(`User not found`);
+            // Obter a data atual
+            const now = new Date();
+            const closingDate = user.closingDate;
+            // Determinar o início e o fim do período atual
+            let startOfPeriod, endOfPeriod;
+            if (now.getDate() > closingDate) {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+            }
+            else {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+            }
+            let filter = {
+                user_id: user_id,
+                type: 'D',
+                date_transaction: {
+                    gte: startOfPeriod,
+                    lte: endOfPeriod
+                }
+            };
             const transactions = await prisma_1.prisma.transaction.findMany({
                 where: filter,
                 select: {
@@ -88,37 +126,55 @@ class Chartnut {
                 }
             });
             // Desencriptar e converter valores para número
-            const comparative = transactions.map(transaction => {
+            const profit = transactions.reduce((sum, transaction) => {
                 const decryptedValue = (0, cryptoUtils_1.decrypt)(transaction.value); // Assumindo que você tem uma função desencriptar
                 const numericValue = parseFloat(decryptedValue);
-                return numericValue;
-            });
-            return comparative;
+                return sum + numericValue;
+            }, 0);
+            return profit;
         }
         catch (err) {
-            console.error('Error in getComparative: ', err);
-            return [0];
+            console.error('Error in getExpense: ', err);
+            return 0;
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
         }
     }
     static async getComparative(user_id) {
-        const sixMonthsAgo = subMonths(new Date(), 6);
-        let filter = {
-            user_id: user_id
-        };
-        filter.createdAt = {
-            gte: sixMonthsAgo,
-        };
         try {
+            const user = await prisma_1.prisma.user.findUnique({ where: { id: user_id } });
+            if (!user)
+                throw new Error(`User not found`);
+            const today = new Date();
+            const sixMonthsAgo = subMonths(today, 6);
+            // Ajusta a data inicial para considerar o dia de fechamento
+            const adjustedStartDate = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), user.closingDate);
+            if (adjustedStartDate > today) {
+                adjustedStartDate.setMonth(adjustedStartDate.getMonth() - 1);
+            }
+            let filter = {
+                user_id: user_id,
+                createdAt: {
+                    gte: adjustedStartDate,
+                },
+            };
             const transactions = await prisma_1.prisma.transaction.findMany({
                 where: filter
             });
             const groupedTransactions = transactions.reduce((acc, transaction) => {
-                const monthYear = format(transaction.createdAt, 'MMyyyy', { locale: ptBR });
-                const monthYearTitle = format(transaction.createdAt, 'MMMM/yyyy', { locale: ptBR });
-                if (!acc[monthYear]) {
-                    acc[monthYear] = { D: 0, R: 0, title: monthYearTitle };
+                const transactionDate = new Date(transaction.date_transaction);
+                let startOfPeriod = new Date(transactionDate.getFullYear(), transactionDate.getMonth(), user.closingDate);
+                if (transactionDate < startOfPeriod) {
+                    startOfPeriod.setMonth(startOfPeriod.getMonth() - 1);
                 }
-                acc[monthYear][transaction.type] += Number((0, cryptoUtils_1.decrypt)(transaction.value));
+                const endOfPeriod = addDays(startOfPeriod, 30);
+                const periodKey = format(startOfPeriod, 'ddMMyyyy', { locale: ptBR });
+                const periodTitle = `${format(startOfPeriod, 'dd/MM/yyyy', { locale: ptBR })} - ${format(endOfPeriod, 'dd/MM/yyyy', { locale: ptBR })}`;
+                if (!acc[periodKey]) {
+                    acc[periodKey] = { D: 0, R: 0, title: periodTitle };
+                }
+                acc[periodKey][transaction.type] += Number((0, cryptoUtils_1.decrypt)(transaction.value));
                 return acc;
             }, {});
             const valores = Object.keys(groupedTransactions).map((key) => ({
@@ -140,23 +196,36 @@ class Chartnut {
             console.error('Error in getComparative: ', err);
             return [0];
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
     static async getSpendingCategory(user_id) {
-        let filter = {
-            user_id: user_id,
-            type: 'D'
-        };
-        // Obter a data atual
-        const today = new Date();
-        // Primeiro dia do mês atual
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        // Último dia do mês atual
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        filter.date_transaction = {
-            gte: firstDayOfMonth,
-            lte: lastDayOfMonth
-        };
         try {
+            const user = await prisma_1.prisma.user.findUnique({ where: { id: user_id } });
+            if (!user)
+                throw new Error(`User not found`);
+            // Obter a data atual
+            const now = new Date();
+            const closingDate = user.closingDate;
+            // Determinar o início e o fim do período atual
+            let startOfPeriod, endOfPeriod;
+            if (now.getDate() > closingDate) {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+            }
+            else {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+            }
+            let filter = {
+                user_id: user_id,
+                type: 'D',
+                date_transaction: {
+                    gte: startOfPeriod,
+                    lte: endOfPeriod
+                }
+            };
             // Recuperando dados do banco
             const transactions = await prisma_1.prisma.transaction.findMany({
                 where: filter,
@@ -208,9 +277,89 @@ class Chartnut {
             console.error('Error in getFixed: ', err);
             return {};
         }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
+    }
+    static async getProgressOfMonth(user_id) {
+        try {
+            const user = await prisma_1.prisma.user.findUnique({ where: { id: user_id } });
+            if (!user)
+                throw new Error('User not found');
+            let filter = {
+                user_id
+            };
+            // Recuperando dados do banco
+            const budget = await prisma_1.prisma.budget.findFirst({
+                where: filter
+            });
+            console.log('budget: ', budget);
+            let filterCategory = {
+                budget_id: budget?.id
+            };
+            // Recuperando dados do banco
+            const budgetCategory = await prisma_1.prisma.budgetCategory.findMany({
+                where: filterCategory
+            });
+            console.log('budgetCategory: ', budgetCategory);
+            const now = new Date();
+            const closingDate = user.closingDate;
+            // Determinar o início e o fim do período atual
+            let startOfPeriod, endOfPeriod;
+            if (now.getDate() > closingDate) {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+            }
+            else {
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+            }
+            const transactions = await prisma_1.prisma.transaction.findMany({
+                where: {
+                    user_id: user.id,
+                    date_transaction: {
+                        gte: startOfPeriod,
+                        lte: endOfPeriod,
+                    },
+                },
+                include: {
+                    budgetCategory: true,
+                },
+            });
+            console.log('transactions: ', transactions);
+            let processedValues = processTransactionData(transactions, budgetCategory);
+            return processedValues;
+        }
+        catch (err) {
+            console.error('Error in getProgressOfMonth: ', err);
+            return {};
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
     }
 }
 exports.Chartnut = Chartnut;
+function processTransactionData(transactions, budgetCategories) {
+    const categoryData = {};
+    // Inicializar os dados das categorias
+    budgetCategories.forEach((category) => {
+        categoryData[category.id] = {
+            name: category.category,
+            type: category.type,
+            predictedAmount: category.amount,
+            actualAmount: 0,
+        };
+    });
+    // Somar os valores das transações por categoria
+    transactions.forEach((transaction) => {
+        const category = transaction.budgetCategory;
+        if (category) {
+            categoryData[category.id].actualAmount += parseFloat((0, cryptoUtils_1.decrypt)(transaction.value));
+        }
+    });
+    return Object.values(categoryData);
+}
 // Função para gerar uma cor hexadecimal aleatória
 function getRandomColor() {
     // Gera um número aleatório e converte para hexadecimal, cortando o '0x' inicial

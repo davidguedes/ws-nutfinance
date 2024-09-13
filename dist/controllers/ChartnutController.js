@@ -33,6 +33,21 @@ class ChartController {
             res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }
+    async getExpense(req, res) {
+        try {
+            const user_id = req.query.user_id?.toString();
+            if (!user_id) {
+                res.status(400).json({ message: 'user_id is required' });
+                return;
+            }
+            const profit = await Chartnut_1.Chartnut.getExpense(user_id);
+            res.json(profit);
+        }
+        catch (error) {
+            console.error('Error in getProfit:', error);
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
+        }
+    }
     async getComparative(req, res) {
         try {
             const user_id = req.query.user_id?.toString();
@@ -60,6 +75,21 @@ class ChartController {
         }
         catch (error) {
             console.error('Error in getSpendingCategory:', error);
+            res.status(500).json({ message: `Internal Server Error: ${error}` });
+        }
+    }
+    async getProgressOfMonth(req, res) {
+        try {
+            const user_id = req.query.user_id?.toString();
+            if (!user_id) {
+                res.status(400).json({ message: 'user_id is required' });
+                return;
+            }
+            const progressOfMonth = await Chartnut_1.Chartnut.getProgressOfMonth(user_id);
+            res.json(progressOfMonth);
+        }
+        catch (error) {
+            console.error('Error in getProgressOfMonth:', error);
             res.status(500).json({ message: `Internal Server Error: ${error}` });
         }
     }

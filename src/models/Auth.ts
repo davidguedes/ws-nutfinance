@@ -28,6 +28,25 @@ export class Auth {
         } catch (error) {
             console.error(error);
             throw error;
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+
+    public static async reset(user_id: string): Promise<boolean> {
+        try {
+            await prisma.closing.deleteMany({ where: { user_id } });
+            await prisma.transaction.deleteMany({ where: { user_id } });
+            await prisma.fixed.deleteMany({ where: { user_id } });
+            await prisma.budgetCategory.deleteMany({ where: { user_id } });
+            await prisma.budget.deleteMany({ where: { user_id } });
+
+            return true;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -59,6 +78,8 @@ export class Auth {
         } catch (err) {
             console.error('Error in getFixed: ', err);
             return 0;
+        } finally {
+            await prisma.$disconnect();
         }
     }
  
@@ -99,6 +120,8 @@ export class Auth {
         } catch (err) {
             console.error('Error in getProfit: ', err);
             return 0;
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -138,6 +161,8 @@ export class Auth {
         } catch (err) {
             console.error('Error in getComparative: ', err);
             return [0];
+        } finally {
+            await prisma.$disconnect();
         }
     }
     

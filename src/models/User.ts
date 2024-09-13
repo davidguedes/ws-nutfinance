@@ -11,6 +11,8 @@ export class User {
         } catch (error) {
             console.error('Failed to find all users: ', error);
             return [];
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -22,6 +24,8 @@ export class User {
         } catch (error) {
             console.error('Failed to find user by ID: ', error);
             return null;
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
@@ -48,6 +52,35 @@ export class User {
             }
             console.error('Failed to create user: ', error);
             throw new Error(`Failed to create user: ${error.message}`);
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
+
+    public static async update(data: {
+        user_id: string,
+        name: string;
+        closing_date: number | undefined;
+    }): Promise<User> {
+        try {
+
+            let dataUpdate: any = {
+                name: data.name,
+            }
+            if(data.closing_date)
+                dataUpdate.closingDate = data.closing_date
+
+            const updatedUser = await prisma.user.update({
+                where: { id: data.user_id },
+                data: dataUpdate
+            });
+
+            return new User(updatedUser);
+        } catch (error) {
+            console.error('Failed to update user: ', error);
+            throw new Error(`Failed to update user: ${error}`);
+        } finally {
+            await prisma.$disconnect();
         }
     }
 
