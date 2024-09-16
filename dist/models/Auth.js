@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Auth = void 0;
+exports.generateAccessToken = generateAccessToken;
+exports.generateRefreshToken = generateRefreshToken;
 const prisma_1 = require("../lib/prisma");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 class Auth {
@@ -19,8 +21,9 @@ class Auth {
             if (!isPasswordValid) {
                 throw new Error(`Invalid email or password`);
             }
-            const token = jsonwebtoken_1.default.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '1h' });
-            return { token, user };
+            const token = jsonwebtoken_1.default.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '1m' });
+            const refreshToken = await Auth.createRefreshToken({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate });
+            return { token, refreshToken, user };
         }
         catch (error) {
             console.error(error);
@@ -29,6 +32,18 @@ class Auth {
         finally {
             await prisma_1.prisma.$disconnect();
         }
+    }
+    static async createRefreshToken(objectUser) {
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7); // Expira em 7 dias
+        const refreshToken = await prisma_1.prisma.refreshToken.create({
+            data: {
+                token: jsonwebtoken_1.default.sign(objectUser, process.env.JWT_REFRESH_SECRET ?? '7db56535dd71a55ddece99828a2e184c', { expiresIn: '7d' }), // Função para gerar o token
+                userId: objectUser.id,
+                expiresAt: expiresAt,
+            },
+        });
+        return refreshToken.token;
     }
     static async reset(user_id) {
         try {
@@ -150,6 +165,24 @@ class Auth {
             await prisma_1.prisma.$disconnect();
         }
     }
+    static async verifyRefreshToken(refreshToken) {
+        try {
+            // Verifica se o refresh token está salvo no banco e se é válido
+            const storedToken = await prisma_1.prisma.refreshToken.findUnique({
+                where: { token: refreshToken },
+            });
+            if (!storedToken)
+                return {};
+            return storedToken;
+        }
+        catch (err) {
+            console.error('Error in verifyRefreshToken: ', err);
+            return {};
+        }
+        finally {
+            await prisma_1.prisma.$disconnect();
+        }
+    }
     // Atributos do modelo
     id;
     name;
@@ -165,4 +198,12 @@ class Auth {
     }
 }
 exports.Auth = Auth;
+// Função para gerar o access token (expira em 15 minutos)
+function generateAccessToken(userId) {
+    return jsonwebtoken_1.default.sign({ userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+}
+// Função para gerar o refresh token (geralmente dura vários dias)
+function generateRefreshToken(userId) {
+    return jsonwebtoken_1.default.sign({ userId }, process.env.REFRESH_TOKEN_SECRET);
+}
 //# sourceMappingURL=Auth.js.map

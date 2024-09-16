@@ -1,17 +1,18 @@
 import express from 'express';
 import chartController from '../controllers/ChartnutController';
+import { verifyToken } from '../utils/auth.middleware';
 const router = express.Router();
 
-router.get('/fixed', chartController.getFixed);
+router.get('/fixed', verifyToken, chartController.getFixed);
 
-router.get('/profit', chartController.getProfit);
+router.get('/profit', verifyToken, chartController.getProfit);
 
-router.get('/expense', chartController.getExpense);
+router.get('/expense', verifyToken, chartController.getExpense);
 
-router.get('/comparative', chartController.getComparative);
+router.get('/comparative', verifyToken, chartController.getComparative);
 
-router.get('/spendingCategory', chartController.getSpendingCategory);
+router.get('/spendingCategory', verifyToken, chartController.getSpendingCategory);
 
-router.get('/progressOfMonth', chartController.getProgressOfMonth);
+router.get('/progressOfMonth', verifyToken, chartController.getProgressOfMonth);
 
 export default router;

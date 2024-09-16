@@ -1,14 +1,15 @@
 import express from 'express';
 import transactionController from '../controllers/TransactionController';
+import { verifyToken } from '../utils/auth.middleware';
 const router = express.Router();
 
 // Definir rotas para posts
-router.get('/', transactionController.getAll);
+router.get('/', verifyToken, transactionController.getAll);
 
-router.post('/', transactionController.create);
+router.post('/', verifyToken, transactionController.create);
 
-router.put('/', transactionController.update);
+router.put('/', verifyToken, transactionController.update);
 
-router.delete('/:id', transactionController.delete);
+router.delete('/:id', verifyToken, transactionController.delete);
 
 export default router;

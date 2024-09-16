@@ -1,13 +1,12 @@
 import { User as PrismaUser } from '@prisma/client';
 import { prisma } from "../lib/prisma"
 import { Prisma } from '@prisma/client';
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export class Auth {
     // Métodos para manipular usuários
 
-    public static async login(email: string, password: string): Promise<{ token: string, user: PrismaUser }> {
+    public static async login(email: string, password: string): Promise<{ token: string, refreshToken: string, user: PrismaUser }> {
         try {
             const user = await prisma.user.findUnique({ where: { email } });
         
@@ -22,15 +21,32 @@ export class Auth {
                 throw new Error(`Invalid email or password`);
             }
         
-            const token = jwt.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '1h' });
+            const token = jwt.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '1m' });
+
+            const refreshToken = await Auth.createRefreshToken({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate });
         
-            return { token, user };
+            return { token, refreshToken, user };
         } catch (error) {
             console.error(error);
             throw error;
         } finally {
             await prisma.$disconnect();
         }
+    }
+
+    public static async createRefreshToken(objectUser: any): Promise<string> {
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7); // Expira em 7 dias
+      
+        const refreshToken = await prisma.refreshToken.create({
+          data: {
+            token: jwt.sign(objectUser, process.env.JWT_REFRESH_SECRET ?? '7db56535dd71a55ddece99828a2e184c', { expiresIn: '7d' }), // Função para gerar o token
+            userId: objectUser.id,
+            expiresAt: expiresAt,
+          },
+        });
+      
+        return refreshToken.token;
     }
 
     public static async reset(user_id: string): Promise<boolean> {
@@ -165,6 +181,25 @@ export class Auth {
             await prisma.$disconnect();
         }
     }
+
+    public static async verifyRefreshToken(refreshToken: string): Promise<any> {
+        try {
+             // Verifica se o refresh token está salvo no banco e se é válido
+            const storedToken = await prisma.refreshToken.findUnique({
+                where: { token: refreshToken },
+            });
+
+            if(!storedToken)
+                return {}
+
+            return storedToken;
+        } catch (err) {
+            console.error('Error in verifyRefreshToken: ', err);
+            return {};
+        } finally {
+            await prisma.$disconnect();
+        }
+    }
     
     // Atributos do modelo
     public id: string;
@@ -180,4 +215,14 @@ export class Auth {
         this.createdAt = prismaUser.createdAt;
         this.updatedAt = prismaUser.updatedAt;
     }
+}
+
+// Função para gerar o access token (expira em 15 minutos)
+export function generateAccessToken(userId: number): string {
+    return jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: '15m' });
+}
+  
+// Função para gerar o refresh token (geralmente dura vários dias)
+export function generateRefreshToken(userId: number): string {
+    return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET!);
 }

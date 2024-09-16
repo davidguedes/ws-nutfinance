@@ -53,6 +53,7 @@ model User {
   Closing        Closing[]
   budgets        Budget[]
   budgetCategory BudgetCategory[]
+  refreshToken   RefreshToken[]
 }
 
 model Fixed {
@@ -110,4 +111,13 @@ model BudgetCategory {
   fixed        Fixed[] // Relação inversa com Fixed
 
   @@unique([budget_id, category]) // Garantia de que cada categoria seja única dentro de um orçamento específico
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
