@@ -21,7 +21,7 @@ export class Auth {
                 throw new Error(`Invalid email or password`);
             }
         
-            const token = jwt.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '1m' });
+            const token = jwt.sign({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '15m' });
 
             const refreshToken = await Auth.createRefreshToken({ id: user.id, name: user.name, email: user.email, closing_date: user.closingDate });
         

@@ -66,7 +66,7 @@ class AuthController {
             }
             console.log('storedToken: ', storedToken);
             // Gera um novo access token
-            const newAccessToken = jsonwebtoken_1.default.sign({ id: decoded.id, name: decoded.name, email: decoded.email, closing_date: decoded.closing_date }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '1m' });
+            const newAccessToken = jsonwebtoken_1.default.sign({ id: decoded.id, name: decoded.name, email: decoded.email, closing_date: decoded.closing_date }, process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r', { expiresIn: '15m' });
             res.json({ accessToken: newAccessToken });
         }
         catch (err) {

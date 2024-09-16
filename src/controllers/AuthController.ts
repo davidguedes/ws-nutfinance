@@ -79,7 +79,7 @@ export class AuthController {
         const newAccessToken = jwt.sign(
           { id: decoded.id, name: decoded.name, email: decoded.email, closing_date: decoded.closing_date },
           process.env.JWT_SECRET ?? 'yMjkMoMJCmEbzp3tKUNvwPTftLPZf83r',
-          { expiresIn: '1m' }
+          { expiresIn: '15m' }
         );
     
         res.json({ accessToken: newAccessToken });
