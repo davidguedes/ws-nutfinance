@@ -23,7 +23,6 @@ export class ClosureController {
             res.status(500).json({ message: 'Internal Server Error' });
         }
     }
-
 }
 
 export default new ClosureController();
