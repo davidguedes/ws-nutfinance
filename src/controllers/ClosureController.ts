@@ -16,7 +16,6 @@ export class ClosureController {
             let value_initial_date: Date | null = initial_date ? new Date(initial_date as string) : null;
             let value_final_date: Date | null = final_date ? new Date(final_date as string) : null;
 
-
             const data = await Closure.findAll(value_user_id, valueFirst, valueRows, value_initial_date, value_final_date);
             res.json({totalRecords: data.totalRecords, records: data.records});
         } catch (error) {
