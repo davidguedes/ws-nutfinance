@@ -11,10 +11,8 @@ class ManagerCron {
         this.jobs = [ClosingCron_1.default, FixedCron_1.default];
     }
     run() {
+        console.log('Iniciando jobs cron...');
         this.jobs.forEach((job) => job.start());
-    }
-    stop() {
-        this.jobs.forEach((job) => job.stop());
     }
 }
 exports.default = new ManagerCron();

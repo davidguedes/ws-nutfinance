@@ -18,6 +18,7 @@ const logger = winston_1.default.createLogger({
 });
 async function processFixedEntries() {
     //console.log('Running daily cron job at 00:01');
+    console.log('Running daily cron job at 00:01');
     logger.info('Running daily cron job at 00:01');
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -54,8 +55,7 @@ async function processFixedEntries() {
 }
 // Cron job para rodar todos os dias à 00:01
 //const job = module.exports = cron.schedule('*/1 * * * *', processFixedEntries, {
-//const job = module.exports = cron.schedule('1 0 * * *', processFixedEntries, {
-const job = module.exports = node_cron_1.default.schedule('35 12 * * *', processFixedEntries, {
+const job = module.exports = node_cron_1.default.schedule('1 0 * * *', processFixedEntries, {
     scheduled: false,
     timezone: 'America/Sao_Paulo'
 });

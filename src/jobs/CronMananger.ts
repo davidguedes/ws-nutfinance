@@ -4,18 +4,15 @@ import processClosings from './ClosingCron';
 import processFixedEntries from './FixedCron';
 
 class ManagerCron {
-    jobs: any[];
+    private jobs: { start: () => void }[];
 
     constructor() {
         this.jobs = [processClosings, processFixedEntries];
     }
 
     run() {
+        console.log('Iniciando jobs cron...');
         this.jobs.forEach((job) => job.start());
-    }
-
-    stop() {
-        this.jobs.forEach((job) => job.stop());
     }
 }
 

@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import routes from './routes/index';
 import cors from 'cors';
-import managerCron from './jobs/CronMananger';
+import ManagerCron from './jobs/CronMananger';
 
 dotenv.config();
 const app = express();
@@ -25,5 +25,5 @@ app.get('/', (req: Request, res: Response) => {
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-  managerCron.run(); // Inicia os jobs cron
+  ManagerCron.run(); // Inicia os jobs cron
 });
