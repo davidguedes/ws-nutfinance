@@ -48,7 +48,10 @@ export class Transaction {
                 orderBy: {
                     date_transaction: sort ? 'desc' : 'asc'
                 },
-                where: filter
+                where: filter,
+                include: {
+                    budgetCategory: true // Inclui os registros associados de 'budgetCategory'
+                }
             });
 
             return transactions.map(tx => ({

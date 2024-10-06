@@ -14,6 +14,13 @@ interface Dataset {
     hoverBackgroundColor: string[];
 }
 
+interface Category {
+    name: string;
+    type: 'income' | 'expense';
+    predictedAmount: number;
+    actualAmount: number;
+  }
+
 export class Chartnut {
     public static async getFixed(user_id: string): Promise<number> {
         try {
@@ -411,7 +418,7 @@ export class Chartnut {
 }
 
 function processTransactionData(transactions: any[], budgetCategories: any[]) {
-    const categoryData: any = {};
+    let categoryData: any = {};
   
     // Inicializar os dados das categorias
     budgetCategories.forEach((category: any) => {
@@ -430,7 +437,11 @@ function processTransactionData(transactions: any[], budgetCategories: any[]) {
         categoryData[category.id].actualAmount += parseFloat(decrypt(transaction.value));
       }
     });
-  
+
+    categoryData = Object.fromEntries(
+        Object.entries(categoryData).filter(([key, value]) => (value as any).actualAmount !== 0)
+    );
+
     return Object.values(categoryData);
   }
 
