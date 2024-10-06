@@ -34,7 +34,7 @@ class BudgetController {
         }
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao carregar orçamento:', error);
+            console.error('Erro ao carregar planejamento:', error);
             res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }
@@ -47,7 +47,7 @@ class BudgetController {
         }
         catch (error) {
             // Se houver um erro, retornar uma resposta de erro
-            console.error('Erro ao carregar orçamento:', error);
+            console.error('Erro ao carregar planejamento:', error);
             res.status(500).json({ message: 'Erro interno do servidor' });
         }
     }

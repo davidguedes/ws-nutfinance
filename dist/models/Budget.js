@@ -48,17 +48,31 @@ class Budget {
             if (!defaultIncomeCategory) {
                 throw new Error('Categoria de ganho padrão não encontrada');
             }
-            // Passo 2: Atualizar as transações para usar o budgetIncomeCategory padrão
-            await prisma_1.prisma.transaction.updateMany({
-                where: {
-                    budgetCategory_id: {
-                        in: incomeCategoryIds
-                    }
+            // Busca id de categorias de renda que não estão no array de atualização
+            const incomeDeleteCategoryIds = await prisma_1.prisma.budgetCategory.findMany({
+                select: {
+                    id: true
                 },
-                data: {
-                    budgetCategory_id: defaultIncomeCategory.id
+                where: {
+                    budget_id: budget.id,
+                    type: 'income',
+                    NOT: { id: { in: incomeCategoryIds } }
                 }
             });
+            if (incomeDeleteCategoryIds.length > 0) {
+                const incomeDeleteCategoryIdsMap = incomeDeleteCategoryIds.map(cat => cat.id);
+                // Passo 2: Atualizar as transações para usar o budgetIncomeCategory padrão
+                await prisma_1.prisma.transaction.updateMany({
+                    where: {
+                        budgetCategory_id: {
+                            in: incomeDeleteCategoryIdsMap
+                        }
+                    },
+                    data: {
+                        budgetCategory_id: defaultIncomeCategory.id
+                    }
+                });
+            }
             // Exclui categorias de renda que não estão no array de atualização
             await prisma_1.prisma.budgetCategory.deleteMany({
                 where: {
@@ -107,17 +121,31 @@ class Budget {
             if (!defaultExpenseCategory) {
                 throw new Error('Categoria de gasto padrão não encontrada');
             }
-            // Passo 2: Atualizar as transações para usar o budgetExpenseCategory padrão
-            await prisma_1.prisma.transaction.updateMany({
-                where: {
-                    budgetCategory_id: {
-                        in: expenseCategoryIds
-                    }
+            // Busca id de categorias de despesas que não estão no array de atualização
+            const expenseDeleteCategoryIds = await prisma_1.prisma.budgetCategory.findMany({
+                select: {
+                    id: true
                 },
-                data: {
-                    budgetCategory_id: defaultExpenseCategory.id
+                where: {
+                    budget_id: budget.id,
+                    type: 'expense',
+                    NOT: { id: { in: expenseCategoryIds } }
                 }
             });
+            if (expenseDeleteCategoryIds.length > 0) {
+                const expenseDeleteCategoryIdsMap = expenseDeleteCategoryIds.map(cat => cat.id);
+                // Passo 2: Atualizar as transações para usar o budgetExpenseCategory padrão
+                await prisma_1.prisma.transaction.updateMany({
+                    where: {
+                        budgetCategory_id: {
+                            in: expenseDeleteCategoryIdsMap
+                        }
+                    },
+                    data: {
+                        budgetCategory_id: defaultExpenseCategory.id
+                    }
+                });
+            }
             // Exclui categorias de despesas que não estão no array de atualização
             await prisma_1.prisma.budgetCategory.deleteMany({
                 where: {

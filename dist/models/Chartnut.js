@@ -347,7 +347,7 @@ class Chartnut {
 }
 exports.Chartnut = Chartnut;
 function processTransactionData(transactions, budgetCategories) {
-    const categoryData = {};
+    let categoryData = {};
     // Inicializar os dados das categorias
     budgetCategories.forEach((category) => {
         categoryData[category.id] = {
@@ -364,6 +364,7 @@ function processTransactionData(transactions, budgetCategories) {
             categoryData[category.id].actualAmount += parseFloat((0, cryptoUtils_1.decrypt)(transaction.value));
         }
     });
+    categoryData = Object.fromEntries(Object.entries(categoryData).filter(([key, value]) => value.actualAmount !== 0));
     return Object.values(categoryData);
 }
 // Função para gerar uma cor hexadecimal aleatória
