@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const Auth_1 = require("../models/Auth");
-const Chartnut_1 = require("../models/Chartnut");
+const ChartNut_1 = require("../models/ChartNut");
 const User_1 = require("../models/User");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const refreshSecret = process.env.JWT_REFRESH_SECRET || '7db56535dd71a55ddece99828a2e184c';
@@ -15,7 +15,7 @@ class AuthController {
         const { email, password } = req.body;
         try {
             let { token, refreshToken, user } = await Auth_1.Auth.login(email, password);
-            const fixed = await Chartnut_1.Chartnut.getFixed('null');
+            const fixed = await ChartNut_1.Chartnut.getFixed('null');
             res.json({ user, refreshToken, token });
         }
         catch (error) {

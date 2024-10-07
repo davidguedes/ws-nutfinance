@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Auth } from '../models/Auth';
-import { Chartnut } from '../models/Chartnut';
+import { Chartnut } from '../models/ChartNut';
 import { User } from '../models/User';
 import jwt from "jsonwebtoken";
 const refreshSecret = process.env.JWT_REFRESH_SECRET || '7db56535dd71a55ddece99828a2e184c';

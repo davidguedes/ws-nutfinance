@@ -17,7 +17,7 @@ class Chartnut {
             const closingDate = user.closingDate;
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             }
@@ -57,7 +57,7 @@ class Chartnut {
             const closingDate = user.closingDate;
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             }
@@ -105,7 +105,7 @@ class Chartnut {
             const closingDate = user.closingDate;
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             }
@@ -216,7 +216,7 @@ class Chartnut {
             const closingDate = user.closingDate;
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             }
@@ -312,7 +312,7 @@ class Chartnut {
             const closingDate = user.closingDate;
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             }
@@ -414,4 +414,4 @@ const hoverBackgroundColors = [
     '#ecf0f1', '#95a5a6', '#2c3e50', '#8e44ad', '#2980b9', '#27ae60', '#f39c12', '#d35400', '#c0392b', '#bdc3c7',
     '#7f8c8d', '#16a085', '#1abc9c', '#e74c3c', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#ecf0f1', '#95a5a6'
 ];
-//# sourceMappingURL=Chartnut.js.map
+//# sourceMappingURL=ChartNut.js.map

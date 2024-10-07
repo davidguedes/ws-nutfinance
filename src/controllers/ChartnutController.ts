@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Chartnut } from '../models/Chartnut';
+import { Chartnut } from '../models/ChartNut';
 
 export class ChartController {
     public async getFixed(req: Request, res: Response): Promise<void> {

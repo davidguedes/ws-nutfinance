@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChartController = void 0;
-const Chartnut_1 = require("../models/Chartnut");
+const ChartNut_1 = require("../models/ChartNut");
 class ChartController {
     async getFixed(req, res) {
         try {
@@ -10,7 +10,7 @@ class ChartController {
                 res.status(400).json({ message: 'user_id is required' });
                 return;
             }
-            const fixed = await Chartnut_1.Chartnut.getFixed(user_id);
+            const fixed = await ChartNut_1.Chartnut.getFixed(user_id);
             res.json(fixed);
         }
         catch (error) {
@@ -25,7 +25,7 @@ class ChartController {
                 res.status(400).json({ message: 'user_id is required' });
                 return;
             }
-            const profit = await Chartnut_1.Chartnut.getProfit(user_id);
+            const profit = await ChartNut_1.Chartnut.getProfit(user_id);
             res.json(profit);
         }
         catch (error) {
@@ -40,7 +40,7 @@ class ChartController {
                 res.status(400).json({ message: 'user_id is required' });
                 return;
             }
-            const profit = await Chartnut_1.Chartnut.getExpense(user_id);
+            const profit = await ChartNut_1.Chartnut.getExpense(user_id);
             res.json(profit);
         }
         catch (error) {
@@ -55,7 +55,7 @@ class ChartController {
                 res.status(400).json({ message: 'user_id is required' });
                 return;
             }
-            const comparative = await Chartnut_1.Chartnut.getComparative(user_id);
+            const comparative = await ChartNut_1.Chartnut.getComparative(user_id);
             res.json(comparative);
         }
         catch (error) {
@@ -70,7 +70,7 @@ class ChartController {
                 res.status(400).json({ message: 'user_id is required' });
                 return;
             }
-            const spendingCategory = await Chartnut_1.Chartnut.getSpendingCategory(user_id);
+            const spendingCategory = await ChartNut_1.Chartnut.getSpendingCategory(user_id);
             res.json(spendingCategory);
         }
         catch (error) {
@@ -85,7 +85,7 @@ class ChartController {
                 res.status(400).json({ message: 'user_id is required' });
                 return;
             }
-            const progressOfMonth = await Chartnut_1.Chartnut.getProgressOfMonth(user_id);
+            const progressOfMonth = await ChartNut_1.Chartnut.getProgressOfMonth(user_id);
             res.json(progressOfMonth);
         }
         catch (error) {
