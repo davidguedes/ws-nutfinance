@@ -34,7 +34,7 @@ export class Chartnut {
 
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             } else {
@@ -79,7 +79,7 @@ export class Chartnut {
     
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             } else {
@@ -132,7 +132,7 @@ export class Chartnut {
     
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             } else {
@@ -259,7 +259,7 @@ export class Chartnut {
     
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             } else {
@@ -382,7 +382,7 @@ export class Chartnut {
     
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
-            if (now.getDate() > closingDate) {
+            if (now.getDate() >= closingDate) {
                 startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
                 endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
             } else {
