@@ -21,8 +21,8 @@ async function processClosings() {
     //console.log('Running restricted cron job at 00:01 between the 1st and 28th of the month');
     const now = new Date();
     const today = now.getDate();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, today + 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth(), today);
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, today, 0, 0, 0);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth(), today - 1, 23, 59, 59);
     try {
         // Buscar usuários com closingDate correspondente ao dia atual
         const users = await prisma.user.findMany({

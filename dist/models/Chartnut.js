@@ -1,12 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chartnut = void 0;
 const prisma_1 = require("../lib/prisma");
 const cryptoUtils_1 = require("../utils/cryptoUtils"); // Importa as funções de criptografia
-const moment_1 = __importDefault(require("moment"));
 class Chartnut {
     static async getFixed(user_id) {
         try {
@@ -18,20 +14,20 @@ class Chartnut {
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
             if (now.getDate() >= closingDate) {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate, 23, 59, 59);
             }
             else {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate - 1, 23, 59, 59);
             }
-            console.log('startOfPeriod: ', startOfPeriod);
-            console.log('endOfPeriod: ', endOfPeriod);
+            const startOfMonthLocal = new Date(startOfPeriod.getTime() - startOfPeriod.getTimezoneOffset() * 60000);
+            const endOfMonthLocal = new Date(endOfPeriod.getTime() - endOfPeriod.getTimezoneOffset() * 60000);
             const filter = {
                 user_id: user_id,
                 date_transaction: {
-                    gte: startOfPeriod,
-                    lte: endOfPeriod
+                    gte: startOfMonthLocal,
+                    lte: endOfMonthLocal
                 }
             };
             const fixed = await prisma_1.prisma.transaction.count({
@@ -58,19 +54,21 @@ class Chartnut {
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
             if (now.getDate() >= closingDate) {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate, 23, 59, 59);
             }
             else {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate - 1, 23, 59, 59);
             }
+            const startOfMonthLocal = new Date(startOfPeriod.getTime() - startOfPeriod.getTimezoneOffset() * 60000);
+            const endOfMonthLocal = new Date(endOfPeriod.getTime() - endOfPeriod.getTimezoneOffset() * 60000);
             let filter = {
                 user_id: user_id,
                 type: 'R',
                 date_transaction: {
-                    gte: startOfPeriod,
-                    lte: endOfPeriod
+                    gte: startOfMonthLocal,
+                    lte: endOfMonthLocal
                 }
             };
             const transactions = await prisma_1.prisma.transaction.findMany({
@@ -106,19 +104,21 @@ class Chartnut {
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
             if (now.getDate() >= closingDate) {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate, 23, 59, 59);
             }
             else {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate - 1, 23, 59, 59);
             }
+            const startOfMonthLocal = new Date(startOfPeriod.getTime() - startOfPeriod.getTimezoneOffset() * 60000);
+            const endOfMonthLocal = new Date(endOfPeriod.getTime() - endOfPeriod.getTimezoneOffset() * 60000);
             let filter = {
                 user_id: user_id,
                 type: 'D',
                 date_transaction: {
-                    gte: startOfPeriod,
-                    lte: endOfPeriod
+                    gte: startOfMonthLocal,
+                    lte: endOfMonthLocal
                 }
             };
             const transactions = await prisma_1.prisma.transaction.findMany({
@@ -149,37 +149,39 @@ class Chartnut {
             if (!user)
                 throw new Error(`User not found`);
             const today = new Date();
-            //const sixMonthsAgo = subMonths(today, 6);
-            const sixMonthsAgo = (0, moment_1.default)(today).subtract(6, 'months').toDate();
-            // Ajusta a data inicial para considerar o dia de fechamento
-            const adjustedStartDate = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth(), user.closingDate);
-            if (adjustedStartDate > today) {
-                adjustedStartDate.setMonth(adjustedStartDate.getMonth() - 1);
-            }
+            const closingDate = user.closingDate;
+            // Ajustando para pegar os últimos 6 meses
+            const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 6, closingDate, 0, 0, 0);
+            // Remove o timezone offset
+            const adjustedStartDate = new Date(sixMonthsAgo.getTime() - sixMonthsAgo.getTimezoneOffset() * 60000);
             let filter = {
                 user_id: user_id,
                 createdAt: {
-                    gte: adjustedStartDate,
+                    gte: adjustedStartDate, // Considera os últimos 6 meses
                 },
             };
             const transactions = await prisma_1.prisma.transaction.findMany({
-                where: filter
+                where: filter,
             });
             const groupedTransactions = transactions.reduce((acc, transaction) => {
                 const transactionDate = new Date(transaction.date_transaction);
-                let startOfPeriod = new Date(transactionDate.getFullYear(), transactionDate.getMonth(), user.closingDate);
+                // Calcular o início do período
+                let startOfPeriod = new Date(transactionDate.getFullYear(), transactionDate.getMonth(), closingDate, 0, 0, 0);
+                // Ajustar para o período correto se a transação for antes do fechamento
                 if (transactionDate < startOfPeriod) {
                     startOfPeriod.setMonth(startOfPeriod.getMonth() - 1);
                 }
-                //const endOfPeriod = addDays(startOfPeriod, 30);
-                const endOfPeriod = (0, moment_1.default)(startOfPeriod).add(30, 'days').toDate();
-                const periodKey = (0, moment_1.default)(startOfPeriod).format('DDMMYYYY');
-                //const periodKey = format(startOfPeriod, 'ddMMyyyy', { locale: ptBR });
-                const periodTitle = `${(0, moment_1.default)(startOfPeriod).format('DD/MM/YYYY')} - ${(0, moment_1.default)(endOfPeriod).format('DD/MM/YYYY')}`;
-                //const periodTitle = `${format(startOfPeriod, 'dd/MM/yyyy', { locale: ptBR })} - ${format(endOfPeriod, 'dd/MM/yyyy', { locale: ptBR })}`;
+                // Remove o timezone
+                const startOfPeriodLocal = new Date(startOfPeriod.getTime() - startOfPeriod.getTimezoneOffset() * 60000);
+                // Calcular o fim do período (próximo mês na mesma data, até o final do dia)
+                const endOfPeriod = new Date(startOfPeriodLocal.getFullYear(), startOfPeriodLocal.getMonth() + 1, closingDate, 23, 59, 59);
+                // Criar uma chave única para cada período
+                const periodKey = `${startOfPeriodLocal.getDate()}${startOfPeriodLocal.getMonth() + 1}${startOfPeriodLocal.getFullYear()}`;
+                const periodTitle = `${startOfPeriodLocal.toLocaleDateString()} - ${endOfPeriod.toLocaleDateString()}`;
                 if (!acc[periodKey]) {
                     acc[periodKey] = { D: 0, R: 0, title: periodTitle };
                 }
+                // Acumular os valores
                 acc[periodKey][transaction.type] += Number((0, cryptoUtils_1.decrypt)(transaction.value));
                 return acc;
             }, {});
@@ -217,19 +219,21 @@ class Chartnut {
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
             if (now.getDate() >= closingDate) {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate, 23, 59, 59);
             }
             else {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate - 1, 23, 59, 59);
             }
+            const startOfMonthLocal = new Date(startOfPeriod.getTime() - startOfPeriod.getTimezoneOffset() * 60000);
+            const endOfMonthLocal = new Date(endOfPeriod.getTime() - endOfPeriod.getTimezoneOffset() * 60000);
             let filter = {
                 user_id: user_id,
                 type: 'D',
                 date_transaction: {
-                    gte: startOfPeriod,
-                    lte: endOfPeriod
+                    gte: startOfMonthLocal,
+                    lte: endOfMonthLocal
                 }
             };
             // Recuperando dados do banco
@@ -239,7 +243,6 @@ class Chartnut {
                     budgetCategory: true,
                 }
             });
-            console.log('transactions: ', transactions);
             // Agrupando e somando os valores por categoria
             const results = transactions.reduce((acc, transaction) => {
                 const categoria = transaction.budgetCategory ? transaction.budgetCategory.category : 'Sem categoria';
@@ -251,7 +254,6 @@ class Chartnut {
                 acc[categoria].total += valor;
                 return acc;
             }, {});
-            console.log('results: ', JSON.stringify(results));
             // Convertendo o resultado em um array para facilitar a manipulação
             const resultArray = Object.keys(results).map(categoria => ({
                 categoria,
@@ -307,32 +309,32 @@ class Chartnut {
             const budgetCategory = await prisma_1.prisma.budgetCategory.findMany({
                 where: filterCategory
             });
-            console.log('budgetCategory: ', budgetCategory);
             const now = new Date();
             const closingDate = user.closingDate;
             // Determinar o início e o fim do período atual
             let startOfPeriod, endOfPeriod;
             if (now.getDate() >= closingDate) {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth() + 1, closingDate, 23, 59, 59);
             }
             else {
-                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate + 1);
-                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate);
+                startOfPeriod = new Date(now.getFullYear(), now.getMonth() - 1, closingDate, 0, 0, 0);
+                endOfPeriod = new Date(now.getFullYear(), now.getMonth(), closingDate - 1, 23, 59, 59);
             }
+            const startOfMonthLocal = new Date(startOfPeriod.getTime() - startOfPeriod.getTimezoneOffset() * 60000);
+            const endOfMonthLocal = new Date(endOfPeriod.getTime() - endOfPeriod.getTimezoneOffset() * 60000);
             const transactions = await prisma_1.prisma.transaction.findMany({
                 where: {
                     user_id: user.id,
                     date_transaction: {
-                        gte: startOfPeriod,
-                        lte: endOfPeriod,
+                        gte: startOfMonthLocal,
+                        lte: endOfMonthLocal,
                     },
                 },
                 include: {
                     budgetCategory: true,
                 },
             });
-            console.log('transactions: ', transactions);
             let processedValues = processTransactionData(transactions, budgetCategory);
             return processedValues;
         }

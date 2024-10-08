@@ -20,8 +20,8 @@ async function processClosings() {
 
   const now = new Date();
   const today = now.getDate();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, today + 1);
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth(), today);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth() - 1, today, 0, 0, 0);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth(), today - 1, 23, 59, 59);
 
   try {
     // Buscar usuários com closingDate correspondente ao dia atual
